@@ -17,6 +17,6 @@ void efi_main(void *ImageHandle __attribute__ ((unused)),
               struct EFI_SYSTEM_TABLE *SystemTable)
 {
     SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Hello KizunaOS! from UEFI\n");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, (unsigned short*)L"Hello KizunaOS! from UEFI\n");
     while(1);
 }
