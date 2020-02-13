@@ -5,6 +5,7 @@ OUTDIR := App
 CC = x86_64-w64-mingw32-g++
 Cflags = \
 	-Wall -Wextra \
+	-e efi_main \
 	-nostdinc -nostdlib \
 	-fno-builtin -Wl,--subsystem,10
 
