@@ -1,22 +1,30 @@
+PROGNAME := /EFI/BOOT/BOOTX64.EFI
+SRCDIR := src
+OUTDIR := App
+
+CC = x86_64-w64-mingw32-g++
+Cflags = \
+	-Wall -Wextra \
+	-nostdinc -nostdlib \
+	-fno-builtin -Wl,--subsystem,10
+
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
 QEMUflags = \
 	-bios $(OVMF) -hda fat:App -nographic -curses
 
-CC = x86_64-w64-mingw32-g++
-CCflags = \
-	-Wall -Wextra \
-	-e EfiMain \
-	-nostdinc -nostdlib \
-	-fno-builtin -Wl,--subsystem,10 -o $@ $<
-TARGET = App/EFI/BOOT/BOOTX64.EFI
+TARGET = $(OUTDIR)/$(PROGNAME)
 
-$(TARGET): src/main.cpp
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+
+all : $(TARGET)
+
+$(TARGET): $(SRCS)
 	mkdir -p App/EFI/BOOT
-	$(CC) $(CCflags) 
+	$(CC) $(Cflags) -o $@ $^
 
 run: $(TARGET)
 	$(QEMU) $(QEMUflags)
 
 clean:
-	rm -rf EFI
+	rm -rf $(OUTDIR)

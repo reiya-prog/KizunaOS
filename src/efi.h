@@ -1,5 +1,7 @@
-#define EFIAPI
+#pragma once
+
 #define IN
+#define EFIAPI
 
 typedef unsigned short CHAR16;
 typedef unsigned long long EFI_STATUS;
@@ -18,24 +20,17 @@ typedef EFI_STATUS (EFIAPI *EFI_TEXT_CLEAR_SCREEN)(
 
 typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
 {
+    unsigned long long buf;
     EFI_TEXT_STRING OutputString;
+    unsigned long long buf2[4];
     EFI_TEXT_CLEAR_SCREEN ClearScreen;
 } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
 typedef struct
 {
-    char buf[60];
+    char buf[52];
     EFI_HANDLE ConsoleOutHandle;
     EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
 } EFI_SYSTEM_TABLE;
 
-EFI_STATUS EFIAPI EfiMain(
-    IN EFI_HANDLE ImageHandle __attribute__ ((unused)),
-    IN EFI_SYSTEM_TABLE *SystemTable
-    )
-{
-    SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, (unsigned short *)L"Hello KizunaOS! from UEFI\n");
-    while (1);
-    return 0;
-}
+EFI_STATUS EFIAPI efi_boot_loader(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE *SystemTable);
