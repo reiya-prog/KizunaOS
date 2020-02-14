@@ -13,13 +13,11 @@ CPPFLAGS = \
 	-nostdlibinc -mno-red-zone \
 	-Wall -Wextra -Wpedantic \
 	-fno-builtin \
-	-fuse-ld=ld
 
-LD = ld.lld
+LD = /usr/bin/lld-link-6.0
 LDFLAGS = \
-	--target=x86_64-pc-win32-coff \
-	--entry=efi_main \
-	-fuse-ld=lld
+	-subsystem:efi_application -nodefaultlib \
+	-entry:efi_main
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
@@ -40,7 +38,7 @@ $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
 
 $(TARGET): $(OBJS)
 	mkdir -p $(APPDIR)
-	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJS)
+	$(LD) $(LDFLAGS) -out:$(TARGET) $(OBJS)
 
 run: $(TARGET)
 	$(QEMU) $(QEMUflags)
