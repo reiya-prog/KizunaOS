@@ -7,17 +7,19 @@ HOMEDIR := $(shell echo $$HOME)
 
 CC = clang++
 CPPFLAGS = \
-	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
-	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
 	-O2 \
-	--target=x86_64-elf \
-	-Wall -Wextra \
-	-nostdlibinc -nostdlib \
-	-fno-builtin
+	--target=x86_64-pc-win32-coff \
+	-fno-stack-protector -fshort-wchar \
+	-nostdlibinc -mno-red-zone \
+	-Wall -Wextra -Wpedantic \
+	-fno-builtin \
+	-fuse-ld=ld
 
 LD = ld.lld
 LDFLAGS = \
-	--entry efi_main
+	--target=x86_64-pc-win32-coff \
+	--entry=efi_main \
+	-fuse-ld=lld
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
@@ -38,7 +40,7 @@ $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
 
 $(TARGET): $(OBJS)
 	mkdir -p $(APPDIR)
-	$(LD) $(LDFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJS)
 
 run: $(TARGET)
 	$(QEMU) $(QEMUflags)
