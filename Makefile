@@ -1,31 +1,48 @@
-PROGNAME := /EFI/BOOT/BOOTX64.EFI
+PROGNAME := BOOTX64.EFI
 SRCDIR := src
-OUTDIR := App
+OBJDIR := build
+OUTDIR := app
+APPDIR := $(OUTDIR)/EFI/BOOT
+HOMEDIR := $(shell echo $$HOME)
 
-CC = x86_64-w64-mingw32-g++
-Cflags = \
+CC = clang++
+CPPFLAGS = \
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++/v1 \
+	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
+	-O2 \
+	--target=x86_64-elf \
 	-Wall -Wextra \
-	-e efi_main \
-	-nostdinc -nostdlib \
-	-fno-builtin -Wl,--subsystem,10
+	-nostdlibinc -nostdlib \
+	-fno-builtin
+
+LD = ld.lld
+LDFLAGS = \
+	--entry efi_main
 
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
 QEMUflags = \
-	-bios $(OVMF) -hda fat:App -nographic -curses
+	-bios $(OVMF) -hda fat:$(OUTDIR) -nographic -curses
 
-TARGET = $(OUTDIR)/$(PROGNAME)
+TARGET = $(APPDIR)/$(PROGNAME)
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
+OBJS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.o,$(SRCS)))
 
-all : $(TARGET)
+.PHONY: all clean
+all: $(TARGET)
 
-$(TARGET): $(SRCS)
-	mkdir -p App/EFI/BOOT
-	$(CC) $(Cflags) -o $@ $^
+$(OBJDIR)/%.o:$(SRCDIR)/%.cpp
+	mkdir -p $(OBJDIR)
+	$(CC) $(CPPFLAGS) -o $@ -c $<
+
+$(TARGET): $(OBJS)
+	mkdir -p $(APPDIR)
+	$(LD) $(LDFLAGS) -o $(TARGET) $(OBJS)
 
 run: $(TARGET)
 	$(QEMU) $(QEMUflags)
 
 clean:
+	rm -rf $(OBJDIR)
 	rm -rf $(OUTDIR)
