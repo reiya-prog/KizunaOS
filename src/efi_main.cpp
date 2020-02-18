@@ -1,4 +1,5 @@
 #include "main.h"
+#include "boot_loader.h"
 
 extern "C"{
     void efi_main(
@@ -6,6 +7,6 @@ extern "C"{
         IN EFI::EFI_SYSTEM_TABLE *SystemTable
         )
     {
-        efi_boot_loader(ImageHandle, SystemTable);
+        BootLoader(ImageHandle, SystemTable);
     }
 }

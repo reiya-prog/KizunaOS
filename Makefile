@@ -7,12 +7,15 @@ HOMEDIR := $(shell echo $$HOME)
 
 CC = clang++
 CPPFLAGS = \
-	-O2 \
+	-MMD -MP\
+	-I $(HOMEDIR)/x86_64-elf/include -I $(HOMEDIR)/x86_64-elf/include/c++v1 \
+	-D__ELF__ -D_LIBCPP_HAS_NO_THREADS \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fshort-wchar \
 	-nostdlibinc -mno-red-zone \
 	-Wall -Wextra -Wpedantic \
 	-fno-builtin \
+	-std=c++17
 
 LD = /usr/bin/lld-link-6.0
 LDFLAGS = \
@@ -28,9 +31,10 @@ TARGET = $(APPDIR)/$(PROGNAME)
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
 OBJS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.o,$(SRCS)))
+DEPS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.d,$(SRCS)))
 
 .PHONY: all clean
-all: $(TARGET)
+all: $(TARGET) Makefile
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
 	mkdir -p $(OBJDIR)
@@ -46,3 +50,5 @@ run: $(TARGET)
 clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(OUTDIR)
+
+-include $(DEPS)

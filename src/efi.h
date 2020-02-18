@@ -24,12 +24,18 @@ public:
     typedef unsigned char CHAR8;
     typedef unsigned short CHAR16;
     typedef void VOID;
-    // typedef ? EFI_GUID;
+    typedef struct{
+        unsigned int Data1;
+        unsigned short Data2;
+        unsigned short Data3;
+        unsigned char Data4[8];
+    } EFI_GUID;
     typedef UINTN EFI_STATUS;
     typedef VOID *EFI_HANDLE;
     typedef VOID *EFI_EVENT;
     typedef UINT64 EFI_LBA;
     typedef UINTN EFI_TPL;
+    typedef UINT64 EFI_PHYSICAL_ADDRESS;
     // typedef ? EFI_MAC_ADDRESS;
     // typedef ? EFI_IPv4_ADDRESS;
     // typedef ? EFI_IPv6_ADDRESS;
@@ -64,6 +70,54 @@ public:
         BOOLEAN CursorVisible;
     } SIMPLE_TEXT_OUTPUT_MODE;
 
+    typedef struct {
+        UINT32 RedMask;
+        UINT32 GreenMask;
+        UINT32 BlueMask;
+        UINT32 ReservedMask;
+    } EFI_PIXEL_BITMASK;
+
+    typedef enum {
+        PixelRedGreenBlueReserved8BitPerColor,
+        PixelBlueGreenRedReserved8BitPerColor,
+        PixelBitMask,
+        PixelBitOnly,
+        PixelFormatMax
+    } EFI_GRAPHICS_PIXEL_FORMAT;
+
+    typedef struct {
+        UINT32 Version;
+        UINT32 HorizontalResolution;
+        UINT32 VerticalResolution;
+        EFI_GRAPHICS_PIXEL_FORMAT PixelFormat;
+        EFI_PIXEL_BITMASK PixelInformation;
+        UINT32 PixelPerScanLine;
+    } EFI_GRAPHICS_OUTPUT_MODE_INFORMATION;
+
+    typedef struct {
+        UINT8 Blue;
+        UINT8 Green;
+        UINT8 Red;
+        UINT8 Reserved;
+    } EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
+
+    typedef enum {
+        EfiBltVideoFill,
+        EfiBltVideoToBltBuffer,
+        EfiBltBufferToVideo,
+        EfiVideoToBuffer,
+        EfiGraphicsOutputBltOperationMax
+    } EFI_GRAPHICS_OUTPUT_BLT_OPERATION;
+
+    typedef struct {
+        UINT32 MaxMode;
+        UINT32 Mode;
+        EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *Info;
+        UINTN SizeOfInfo;
+        unsigned long long FrameBufferBase;
+        UINTN FrameBufferSize;
+    } EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE;
+
     typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
     {
         EFI_STATUS (EFIAPI *Reset)(
@@ -89,6 +143,30 @@ public:
         EFI_STATUS (EFIAPI *ClearScreen)(
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This);
     } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+
+    typedef struct _EFI_GRAPHICS_OUTPUT_PROTOCOL
+    {
+        EFI_STATUS (EFIAPI *QueryMode)(
+            IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
+            IN UINT32 ModeNumber,
+            OUT UINTN *SizeOfInfo,
+            OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION **Info);
+        EFI_STATUS (EFIAPI SetMode)(
+            IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
+            IN UINT32 ModeNumber);
+        EFI_STATUS (EFIAPI Blt)(
+            IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
+            IN OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer,
+            IN EFI_GRAPHICS_OUTPUT_BLT_OPERATION BitOperation,
+            IN UINTN SourceX,
+            IN UINTN SourceY,
+            IN UINTN DestinationX,
+            IN UINTN DestinationY,
+            IN UINTN Width,
+            IN UINTN Height,
+            IN UINTN Delta);
+        EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *Mode;
+    } EFI_GRAPHICS_OUTPUT_PROTOCOL;
 
     typedef struct
     {
@@ -146,7 +224,12 @@ public:
         //
         // Library Services
         //
-        unsigned long long buf11[5];
+        unsigned long long buf11[2];
+        EFI_STATUS (EFIAPI *LocateProtocol)(
+            IN EFI_GUID *Protocol,
+            IN VOID *Registration,
+            OUT VOID **Interface);
+        unsigned long long buf11_2[2];
 
         //
         // 32-bit CRC Services
@@ -168,9 +251,27 @@ public:
         EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
         EFI_HANDLE StandardErrorHandle;
         EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *StdErr;
-
+        unsigned long long _buf;
         EFI_BOOT_SERVICES *BootServices;
     } EFI_SYSTEM_TABLE;
-};
 
-EFI::EFI_STATUS EFIAPI efi_boot_loader(IN EFI::EFI_HANDLE ImageHandle, IN EFI::EFI_SYSTEM_TABLE *SystemTable);
+    EFI(){};
+    EFI(EFI_SYSTEM_TABLE *ST){
+        this->SystemTable = ST;
+    }
+
+    void EFIBootInit();
+    void setSystemTable(EFI_SYSTEM_TABLE* ST){
+        this->SystemTable = ST;
+    }
+    EFI_SYSTEM_TABLE* getSystemTable(){
+        return this->SystemTable;
+    }
+    EFI_GRAPHICS_OUTPUT_PROTOCOL* getGraphicsOutputProtocol(){
+        return this->GraphicsOutputProtocol;
+    }
+
+private:
+    EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutputProtocol;
+    EFI_SYSTEM_TABLE *SystemTable;
+};

@@ -1,6 +1,5 @@
 #pragma once
 
-#define NULL 0
-
 #include "efi.h"
 #include "stdfunc.h"
+#include "boot_loader.h"
