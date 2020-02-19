@@ -1,5 +1,8 @@
 #pragma once
 
-#include "efi.h"
-#include "stdfunc.h"
 #include "boot_loader.h"
+#include "efi.h"
+#include "graphics.h"
+#include "graphics_mouse.h"
+#include "stdfunc.h"
+#include <stddef.h>

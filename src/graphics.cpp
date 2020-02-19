@@ -1,9 +1,10 @@
 #include "main.h"
-#include "graphics.h"
-#include "stdfunc.h"
-#include "efi.h"
 
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL white = {0xff, 0xff, 0xff, 0xff};
+EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_white = {0x00, 0x00, 0xff, 0xff};
+EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_black = {0x00, 0x00, 0x00, 0xff};
+EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_blue  = {0xff, 0x00, 0x00, 0xff};
+EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_green = {0x00, 0xff, 0x00, 0xff};
+EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_red   = {0x00, 0x00, 0xff, 0xff};
 
 void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
 {
@@ -14,7 +15,7 @@ void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIX
     point->Blue = color.Blue;
     point->Green = color.Green;
     point->Red = color.Red;
-    point->Reserved = color.Reserved;//*/
+    point->Reserved = color.Reserved;
 }
 
 void draw_rect(RECT rect, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
@@ -29,4 +30,13 @@ void draw_rect(RECT rect, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
         draw_pixel(rect.x, i, color, efi);
     for (i = rect.y; i < (rect.y + rect.h); ++i)
         draw_pixel(rect.x + rect.w - 1, i, color, efi);
+}
+
+EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL get_pixel(unsigned int x, unsigned int y, EFI *efi)
+{
+    unsigned int HorizontalResolution = efi->getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution;
+    EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *base = reinterpret_cast<EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *>(efi->getGraphicsOutputProtocol()->Mode->FrameBufferBase);
+    EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *point = base + (HorizontalResolution * y) + x;
+
+    return *point;
 }

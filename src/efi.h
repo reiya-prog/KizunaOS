@@ -294,10 +294,14 @@ public:
     EFI_SYSTEM_TABLE* getSystemTable(){
         return this->SystemTable;
     }
+    EFI_SIMPLE_POINTER_PROTOCOL* getSimplePointerProtocol(){
+        return this->SimplePointerProtocol;
+    }
     EFI_GRAPHICS_OUTPUT_PROTOCOL* getGraphicsOutputProtocol(){
         return this->GraphicsOutputProtocol;
     }
 
+private:
     EFI_SIMPLE_POINTER_PROTOCOL *SimplePointerProtocol;
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutputProtocol;
     EFI_SYSTEM_TABLE *SystemTable;

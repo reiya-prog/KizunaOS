@@ -1,0 +1,1 @@
+qemu-system-x86_64 -bios ovmf\bios64.bin -drive format=raw,file=fat:rw:app

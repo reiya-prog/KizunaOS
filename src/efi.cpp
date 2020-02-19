@@ -1,5 +1,4 @@
 #include "main.h"
-#include "efi.h"
 
 EFI::EFI_GUID SimplePointerProtocol_GUID = {
     0x31878c87, 0xb75, 0x11d5,
@@ -18,6 +17,6 @@ EFI::EFI_GUID GraphicsOutputProtocol_GUID = {
 
 void EFI::EFIBootInit(){
     SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, nullptr);
-    SystemTable->BootServices->LocateProtocol(&GraphicsOutputProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->GraphicsOutputProtocol));
     SystemTable->BootServices->LocateProtocol(&SimplePointerProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->SimplePointerProtocol));
+    SystemTable->BootServices->LocateProtocol(&GraphicsOutputProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->GraphicsOutputProtocol));
 }
