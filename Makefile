@@ -25,7 +25,7 @@ LDFLAGS = \
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
 QEMUflags = \
-	-bios $(OVMF) -hda fat:$(OUTDIR) -nographic -curses
+	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR) -nographic
 
 TARGET = $(APPDIR)/$(PROGNAME)
 

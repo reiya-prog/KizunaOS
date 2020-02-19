@@ -71,6 +71,22 @@ public:
     } SIMPLE_TEXT_OUTPUT_MODE;
 
     typedef struct {
+        INT32 RelativeMovementX;
+        INT32 RelativeMovementY;
+        INT32 RelativeMovementZ;
+        BOOLEAN LeftBotton;
+        BOOLEAN RightBotton;
+    } EFI_SIMPLE_POINTER_STATE;
+
+    typedef struct {
+        UINT64 ResolutionX;
+        UINT64 ResolutionY;
+        UINT64 ResolutionZ;
+        BOOLEAN LeftButton;
+        BOOLEAN RightButton;
+    } EFI_SIMPLE_POINTER_MODE;
+
+    typedef struct {
         UINT32 RedMask;
         UINT32 GreenMask;
         UINT32 BlueMask;
@@ -114,7 +130,7 @@ public:
         UINT32 Mode;
         EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *Info;
         UINTN SizeOfInfo;
-        unsigned long long FrameBufferBase;
+        EFI_PHYSICAL_ADDRESS FrameBufferBase;
         UINTN FrameBufferSize;
     } EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE;
 
@@ -144,6 +160,17 @@ public:
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This);
     } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
+    typedef struct _EFI_SIMPLE_POINTER_PROTOCOL {
+        EFI_STATUS (EFIAPI *Reset)(
+            IN _EFI_SIMPLE_POINTER_PROTOCOL *This,
+            IN BOOLEAN ExtendedVerification);
+        EFI_STATUS (EFIAPI *GetState)(
+            IN _EFI_SIMPLE_POINTER_PROTOCOL *This,
+            IN OUT EFI_SIMPLE_POINTER_STATE *State);
+        EFI_EVENT WaitForInput;
+        EFI_SIMPLE_POINTER_MODE *Mode;
+    } EFI_SIMPLE_POINTER_PROTOCOL;
+
     typedef struct _EFI_GRAPHICS_OUTPUT_PROTOCOL
     {
         EFI_STATUS (EFIAPI *QueryMode)(
@@ -151,10 +178,10 @@ public:
             IN UINT32 ModeNumber,
             OUT UINTN *SizeOfInfo,
             OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION **Info);
-        EFI_STATUS (EFIAPI SetMode)(
+        EFI_STATUS (EFIAPI *SetMode)(
             IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
             IN UINT32 ModeNumber);
-        EFI_STATUS (EFIAPI Blt)(
+        EFI_STATUS (EFIAPI *Blt)(
             IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
             IN OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer,
             IN EFI_GRAPHICS_OUTPUT_BLT_OPERATION BitOperation,
@@ -271,7 +298,7 @@ public:
         return this->GraphicsOutputProtocol;
     }
 
-private:
+    EFI_SIMPLE_POINTER_PROTOCOL *SimplePointerProtocol;
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutputProtocol;
     EFI_SYSTEM_TABLE *SystemTable;
 };

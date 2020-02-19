@@ -1,8 +1,8 @@
 #include "main.h"
 #include "graphics.h"
+#include "stdfunc.h"
 #include "efi.h"
 
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL black = {0xff, 0xff, 0xff, 0xff};
 EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL white = {0xff, 0xff, 0xff, 0xff};
 
 void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
@@ -11,10 +11,10 @@ void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIX
     EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *base = reinterpret_cast<EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *>(efi->getGraphicsOutputProtocol()->Mode->FrameBufferBase);
     EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *point = base + (HorizontalResolution * y) + x;
 
-    point->Blue = 0xff;
-    point->Green = 0xff;
-    point->Red = 0xff;
-    point->Reserved = 0xff;
+    point->Blue = color.Blue;
+    point->Green = color.Green;
+    point->Red = color.Red;
+    point->Reserved = color.Reserved;//*/
 }
 
 void draw_rect(RECT rect, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
