@@ -13,23 +13,22 @@ EFI::EFI_STATUS EFIAPI BootLoader(
 
     unsigned long long Status;
     EFI::EFI_SIMPLE_POINTER_STATE State;
-    unsigned int px = 10, py = 10;
+    unsigned int px = 0, py = 0;
     unsigned long long Waitidx;
 
     draw_rect(r, color_white, &efi);
-    efi.getSimplePointerProtocol()->Reset(efi.getSimplePointerProtocol(), false);
     while(true){
         put_cursor(px, py, &efi);
         efi.getSystemTable()->BootServices->WaitForEvent(1, &(efi.getSimplePointerProtocol()->WaitForInput), &Waitidx);
         Status = efi.getSimplePointerProtocol()->GetState(efi.getSimplePointerProtocol(), &State);
         putc(&efi, L'c');
         if(!Status){
-            px += State.RelativeMovementX;
+            px += State.RelativeMovementX >> 13;
             px = max(0, px);
-            px = min(efi.getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution-1, px);
-            py += State.RelativeMovementY;
+            px = min(efi.getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution-6, px);
+            py += State.RelativeMovementY >> 13;
             py = max(0, py);
-            py = min(efi.getGraphicsOutputProtocol()->Mode->Info->VerticalResolution-1, py);
+            py = min(efi.getGraphicsOutputProtocol()->Mode->Info->VerticalResolution-6, py);
 
         }
     }

@@ -6,8 +6,8 @@ int cursor_old_y;
 
 void draw_cursor(int x, int y, EFI *efi)
 {
-    for(int i=y;i<y+20;++i){
-        for(int j=x;j<x+20;++j){
+    for(int i=y;i<y+5;++i){
+        for(int j=x;j<x+5;++j){
             draw_pixel(i, j, color_blue, efi);
         }
     }
