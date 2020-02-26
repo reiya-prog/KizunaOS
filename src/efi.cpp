@@ -19,5 +19,6 @@ void EFI::EFIBootInit(){
     SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, nullptr);
     SystemTable->BootServices->LocateProtocol(&GraphicsOutputProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->GraphicsOutputProtocol));
     SystemTable->BootServices->LocateProtocol(&SimplePointerProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->SimplePointerProtocol));
+    SystemTable->BootServices->LocateProtocol(&SimpleFileSystemProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->SimpleFileSystemProtocol));
     SimplePointerProtocol->Reset(SimplePointerProtocol, false);
 }

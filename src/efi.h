@@ -6,6 +6,9 @@
 #define EFIAPI
 
 #define EFI_BOOT_SERVICES_SIGNATURE 0x56524553544f4f42
+#define EFI_FILE_PROTOCOL_REVISION 0x00010000
+#define EFI_FILE_PROTOCOL_REVISION2 0x00020000
+#define EFI_FILE_PROTOCOL_LATEST_REVISION EFI_FILE_PROTOCOL_REVISION2
 
 class EFI
 {
@@ -24,7 +27,8 @@ public:
     typedef unsigned char CHAR8;
     typedef unsigned short CHAR16;
     typedef void VOID;
-    typedef struct{
+    typedef struct
+    {
         unsigned int Data1;
         unsigned short Data2;
         unsigned short Data3;
@@ -44,6 +48,20 @@ public:
     struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
     struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
+    typedef struct {
+        UINT16 Year;
+        UINT8 Month;
+        UINT8 Day;
+        UINT8 Hour;
+        UINT8 Minute;
+        UINT8 Second;
+        UINT8 Padl;
+        UINT32 Nanosecond;
+        INT16 TimeZone;
+        UINT8 Daylight;
+        UINT8 Pad2;
+    } EFI_TIME;
+
     typedef struct
     {
         UINT16 ScanCode;
@@ -52,16 +70,19 @@ public:
 
     typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL
     {
-        EFI_STATUS (EFIAPI *Reset)(
+        EFI_STATUS(EFIAPI *Reset)
+        (
             IN struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
             IN BOOLEAN ExtendedVerification);
-        EFI_STATUS (EFIAPI *ReadKeyStroke)(
+        EFI_STATUS(EFIAPI *ReadKeyStroke)
+        (
             IN struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
             OUT EFI_INPUT_KEY *Key);
         EFI_EVENT WaitForKey;
     } EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
-    typedef struct{
+    typedef struct
+    {
         INT32 MaxMode;
         INT32 Mode;
         INT32 Attribute;
@@ -70,7 +91,8 @@ public:
         BOOLEAN CursorVisible;
     } SIMPLE_TEXT_OUTPUT_MODE;
 
-    typedef struct {
+    typedef struct
+    {
         INT32 RelativeMovementX;
         INT32 RelativeMovementY;
         INT32 RelativeMovementZ;
@@ -78,7 +100,8 @@ public:
         BOOLEAN RightBotton;
     } EFI_SIMPLE_POINTER_STATE;
 
-    typedef struct {
+    typedef struct
+    {
         UINT64 ResolutionX;
         UINT64 ResolutionY;
         UINT64 ResolutionZ;
@@ -86,14 +109,16 @@ public:
         BOOLEAN RightButton;
     } EFI_SIMPLE_POINTER_MODE;
 
-    typedef struct {
+    typedef struct
+    {
         UINT32 RedMask;
         UINT32 GreenMask;
         UINT32 BlueMask;
         UINT32 ReservedMask;
     } EFI_PIXEL_BITMASK;
 
-    typedef enum {
+    typedef enum
+    {
         PixelRedGreenBlueReserved8BitPerColor,
         PixelBlueGreenRedReserved8BitPerColor,
         PixelBitMask,
@@ -101,7 +126,8 @@ public:
         PixelFormatMax
     } EFI_GRAPHICS_PIXEL_FORMAT;
 
-    typedef struct {
+    typedef struct
+    {
         UINT32 Version;
         UINT32 HorizontalResolution;
         UINT32 VerticalResolution;
@@ -110,14 +136,16 @@ public:
         UINT32 PixelPerScanLine;
     } EFI_GRAPHICS_OUTPUT_MODE_INFORMATION;
 
-    typedef struct {
+    typedef struct
+    {
         UINT8 Blue;
         UINT8 Green;
         UINT8 Red;
         UINT8 Reserved;
     } EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
 
-    typedef enum {
+    typedef enum
+    {
         EfiBltVideoFill,
         EfiBltVideoToBltBuffer,
         EfiBltBufferToVideo,
@@ -125,7 +153,8 @@ public:
         EfiGraphicsOutputBltOperationMax
     } EFI_GRAPHICS_OUTPUT_BLT_OPERATION;
 
-    typedef struct {
+    typedef struct
+    {
         UINT32 MaxMode;
         UINT32 Mode;
         EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *Info;
@@ -136,35 +165,45 @@ public:
 
     typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL
     {
-        EFI_STATUS (EFIAPI *Reset)(
+        EFI_STATUS(EFIAPI *Reset)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
             IN BOOLEAN ExtendedVerification);
-        EFI_STATUS (EFIAPI *OutputString)(
+        EFI_STATUS(EFIAPI *OutputString)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
             IN CHAR16 *String);
-        EFI_STATUS (EFIAPI *TestString)(
+        EFI_STATUS(EFIAPI *TestString)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
             IN CHAR16 *String);
-        EFI_STATUS (EFIAPI *QueryMode)(
+        EFI_STATUS(EFIAPI *QueryMode)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
             IN UINTN ModeNumber,
             OUT UINTN *Columns,
             OUT UINTN *Rows);
-        EFI_STATUS (EFIAPI *SetMode)(
+        EFI_STATUS(EFIAPI *SetMode)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
             IN UINTN ModeNumber);
-        EFI_STATUS (EFIAPI *SetAttribute)(
+        EFI_STATUS(EFIAPI *SetAttribute)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
             IN UINTN Attribute);
-        EFI_STATUS (EFIAPI *ClearScreen)(
+        EFI_STATUS(EFIAPI *ClearScreen)
+        (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This);
     } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
-    typedef struct _EFI_SIMPLE_POINTER_PROTOCOL {
-        EFI_STATUS (EFIAPI *Reset)(
+    typedef struct _EFI_SIMPLE_POINTER_PROTOCOL
+    {
+        EFI_STATUS(EFIAPI *Reset)
+        (
             IN _EFI_SIMPLE_POINTER_PROTOCOL *This,
             IN BOOLEAN ExtendedVerification);
-        EFI_STATUS (EFIAPI *GetState)(
+        EFI_STATUS(EFIAPI *GetState)
+        (
             IN _EFI_SIMPLE_POINTER_PROTOCOL *This,
             IN OUT EFI_SIMPLE_POINTER_STATE *State);
         EFI_EVENT WaitForInput;
@@ -173,15 +212,18 @@ public:
 
     typedef struct _EFI_GRAPHICS_OUTPUT_PROTOCOL
     {
-        EFI_STATUS (EFIAPI *QueryMode)(
+        EFI_STATUS(EFIAPI *QueryMode)
+        (
             IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
             IN UINT32 ModeNumber,
             OUT UINTN *SizeOfInfo,
             OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION **Info);
-        EFI_STATUS (EFIAPI *SetMode)(
+        EFI_STATUS(EFIAPI *SetMode)
+        (
             IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
             IN UINT32 ModeNumber);
-        EFI_STATUS (EFIAPI *Blt)(
+        EFI_STATUS(EFIAPI *Blt)
+        (
             IN _EFI_GRAPHICS_OUTPUT_PROTOCOL *This,
             IN OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltBuffer,
             IN EFI_GRAPHICS_OUTPUT_BLT_OPERATION BitOperation,
@@ -194,6 +236,58 @@ public:
             IN UINTN Delta);
         EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *Mode;
     } EFI_GRAPHICS_OUTPUT_PROTOCOL;
+
+    typedef struct{
+        UINT64 Size;
+        UINT64 FileSize;
+        UINT64 PhysicalSize;
+        EFI_TIME CreateTime;
+        EFI_TIME LastAccessTime;
+        EFI_TIME ModificationTime;
+        UINT64 Attribute;
+        CHAR16 FileName[];
+    } EFI_FILE_INFO;
+
+    typedef struct _EFI_FILE_PROTOCOL
+    {
+        UINT64 Revision;
+        EFI_STATUS(EFIAPI *Open)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            OUT _EFI_FILE_PROTOCOL **NewHandle,
+            IN CHAR16 *FileName,
+            IN UINT64 OpenMode,
+            IN UINT64 Attributes);
+        EFI_STATUS(EFIAPI *Close)
+        (
+            IN _EFI_FILE_PROTOCOL *This);
+        EFI_STATUS(EFIAPI *Delete)
+        (
+            IN _EFI_FILE_PROTOCOL *This);
+        EFI_STATUS(EFIAPI *Read)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            IN OUT UINTN *BufferSize,
+            OUT VOID *Buffer);
+        EFI_STATUS(EFIAPI *Write)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            IN OUT INTN *BufferSize,
+            IN VOID *Buffer);
+        unsigned long long buf[4];
+        EFI_STATUS(EFIAPI *Flush)
+        (
+            IN _EFI_FILE_PROTOCOL *This);
+    } EFI_FILE_PROTOCOL;
+
+    typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL
+    {
+        UINT64 Revision;
+        EFI_STATUS(EFIAPI *OpenVolume)
+        (
+            IN _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *This,
+            OUT EFI_FILE_PROTOCOL **Root);
+    } EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
 
     typedef struct
     {
@@ -212,7 +306,8 @@ public:
         // Event & Timer Services
         //
         unsigned long long buf4[2];
-        EFI_STATUS (EFIAPI *WaitForEvent)(
+        EFI_STATUS(EFIAPI *WaitForEvent)
+        (
             IN UINTN NumberOfEvents,
             IN EFI_EVENT *Event,
             OUT UINTN *Index);
@@ -232,7 +327,8 @@ public:
         // Miscellaneous Services
         //
         unsigned long long buf8[2];
-        EFI_STATUS (EFIAPI *SetWatchdogTimer)(
+        EFI_STATUS(EFIAPI *SetWatchdogTimer)
+        (
             IN UINTN Timeout,
             IN UINT64 WatchdogCode,
             IN UINTN DataSize,
@@ -252,7 +348,8 @@ public:
         // Library Services
         //
         unsigned long long buf11[2];
-        EFI_STATUS (EFIAPI *LocateProtocol)(
+        EFI_STATUS(EFIAPI *LocateProtocol)
+        (
             IN EFI_GUID *Protocol,
             IN VOID *Registration,
             OUT VOID **Interface);
@@ -283,26 +380,36 @@ public:
     } EFI_SYSTEM_TABLE;
 
     EFI(){};
-    EFI(EFI_SYSTEM_TABLE *ST){
+    EFI(EFI_SYSTEM_TABLE *ST)
+    {
         this->SystemTable = ST;
     }
 
     void EFIBootInit();
-    void setSystemTable(EFI_SYSTEM_TABLE* ST){
+    void setSystemTable(EFI_SYSTEM_TABLE *ST)
+    {
         this->SystemTable = ST;
     }
-    EFI_SYSTEM_TABLE* getSystemTable(){
+    EFI_SYSTEM_TABLE *getSystemTable()
+    {
         return this->SystemTable;
     }
-    EFI_SIMPLE_POINTER_PROTOCOL* getSimplePointerProtocol(){
+    EFI_SIMPLE_POINTER_PROTOCOL *getSimplePointerProtocol()
+    {
         return this->SimplePointerProtocol;
     }
-    EFI_GRAPHICS_OUTPUT_PROTOCOL* getGraphicsOutputProtocol(){
+    EFI_GRAPHICS_OUTPUT_PROTOCOL *getGraphicsOutputProtocol()
+    {
         return this->GraphicsOutputProtocol;
+    }
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *getSimpleFileSystemProtocol()
+    {
+        return this->SimpleFileSystemProtocol;
     }
 
 private:
     EFI_SIMPLE_POINTER_PROTOCOL *SimplePointerProtocol;
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutputProtocol;
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *SimpleFileSystemProtocol;
     EFI_SYSTEM_TABLE *SystemTable;
 };
