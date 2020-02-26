@@ -1,36 +1,39 @@
 #include "main.h"
 
-EFI::EFI_STATUS EFIAPI BootLoader(
-    IN EFI::EFI_HANDLE ImageHandle __attribute__ ((unused)),
-    IN EFI::EFI_SYSTEM_TABLE *SystemTable)
+void BootLoader(EFI::EFI_HANDLE ImageHandle, EFI::EFI_SYSTEM_TABLE *SystemTable)
 {
-    RECT r = {10, 10, 100, 200};
+    /* UEFI initialize */
     EFI efi(SystemTable);
-    efi.EFIBootInit();
+    efi.initEFI();
     efi.getSystemTable()->ConOut->ClearScreen(efi.getSystemTable()->ConOut);
+
+    /*  */
+    initGDTR();
+    initIDTR();
 
     efi.getSystemTable()->ConOut->OutputString(efi.getSystemTable()->ConOut, (EFI::CHAR16 *)L"Linking to you, access our connection!\r\nKizunaOS, boot up!!\n\r\n");
 
-    unsigned long long Status;
-    EFI::EFI_SIMPLE_POINTER_STATE State;
-    unsigned int px = 0, py = 0;
-    unsigned long long Waitidx;
-
-    draw_rect(r, color_white, &efi);
-    while(true){
-        put_cursor(px, py, &efi);
-        efi.getSystemTable()->BootServices->WaitForEvent(1, &(efi.getSimplePointerProtocol()->WaitForInput), &Waitidx);
-        Status = efi.getSimplePointerProtocol()->GetState(efi.getSimplePointerProtocol(), &State);
-        putc(&efi, L'c');
-        if(!Status){
-            px += State.RelativeMovementX >> 13;
-            px = max(0, px);
-            px = min(efi.getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution-6, px);
-            py += State.RelativeMovementY >> 13;
-            py = max(0, py);
-            py = min(efi.getGraphicsOutputProtocol()->Mode->Info->VerticalResolution-6, py);
-
+    /* Ready For ExitBootServices() */
+    EFI::EFI_STATUS status;
+    EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
+    EFI::UINTN MemoryMapSize = 0;
+    EFI::UINTN MapKey, DescriptorSize;
+    EFI::UINT32 DescriptorVersion;
+    do
+    {
+        status = efi.getSystemTable()->BootServices->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey, &DescriptorSize, &DescriptorVersion);
+        while (status == EFI::EFI_BUFFER_TOO_SMALL)
+        {
+            if (MemoryMap)
+            {
+                efi.getSystemTable()->BootServices->FreePool(MemoryMap);
+            }
+            status = efi.getSystemTable()->BootServices->AllocatePool(EFI::EfiLoaderData, MemoryMapSize, reinterpret_cast<EFI::VOID **>(&MemoryMap));
+            status = efi.getSystemTable()->BootServices->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey, &DescriptorSize, &DescriptorVersion);
         }
-    }
-    return 0;
+        status = efi.getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
+    } while (status != EFI::EFI_SUCCESS);
+
+    /* Kernel Start */
+
 }

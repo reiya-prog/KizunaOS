@@ -15,7 +15,7 @@ EFI::EFI_GUID GraphicsOutputProtocol_GUID = {
    {0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a}
 };
 
-void EFI::EFIBootInit(){
+void EFI::initEFI(){
     SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, nullptr);
     SystemTable->BootServices->LocateProtocol(&GraphicsOutputProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->GraphicsOutputProtocol));
     SystemTable->BootServices->LocateProtocol(&SimplePointerProtocol_GUID, nullptr, reinterpret_cast<void **>(&this->SimplePointerProtocol));

@@ -18,6 +18,12 @@ void putc(EFI *efi, EFI::CHAR16 chara)
         str[1] = L'\n';
         str[2] = L'\0';
     }
+    else if (chara == L'\n')
+    {
+        str[0] = '\r';
+        str[1] = '\n';
+        str[2] = '\0';
+    }
     else if (chara == L'\b')
     {
         str[0] = L'\b';
@@ -30,5 +36,9 @@ void putc(EFI *efi, EFI::CHAR16 chara)
         str[0] = chara;
         str[1] = L'\0';
     }
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, str);
+}
+
+void puts(EFI *efi, EFI::CHAR16 *str){
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, str);
 }
