@@ -7,6 +7,6 @@ extern "C"{
         IN EFI::EFI_SYSTEM_TABLE *SystemTable
         )
     {
-        BootLoader(ImageHandle, SystemTable);
+        boot_loader(ImageHandle, SystemTable);
     }
 }

@@ -255,6 +255,16 @@ public:
         EFI_STATUS(EFIAPI *ClearScreen)
         (
             IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This);
+        EFI_STATUS(EFIAPI *SetCursorPosition)
+        (
+            IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
+            IN UINTN Column,
+            IN UINTN Row);
+        EFI_STATUS(EFIAPI *EnableCursor)
+        (
+            IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
+            IN BOOLEAN Visible);
+        SIMPLE_TEXT_OUTPUT_MODE *Mode;
     } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
     typedef struct _EFI_SIMPLE_POINTER_PROTOCOL

@@ -1,19 +1,31 @@
 #include "main.h"
 
-void BootLoader(EFI::EFI_HANDLE ImageHandle, EFI::EFI_SYSTEM_TABLE *SystemTable)
+FrameBuffer *initFrameBuffer(EFI::EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP)
+{
+    FrameBuffer *fb = nullptr;
+    fb->FrameBufferBase = reinterpret_cast<unsigned long long *>(GOP->Mode->FrameBufferBase);
+    fb->FrameBufferSize = static_cast<unsigned long long>(GOP->Mode->FrameBufferSize);
+    fb->ResolutionH = static_cast<unsigned int>(GOP->Mode->Info->HorizontalResolution);
+    fb->ResolutionV = static_cast<unsigned int>(GOP->Mode->Info->VerticalResolution);
+
+    return fb;
+}
+
+void boot_loader(EFI::EFI_HANDLE ImageHandle, EFI::EFI_SYSTEM_TABLE *SystemTable)
 {
     /* UEFI initialize */
     EFI efi(SystemTable);
     efi.initEFI();
-    efi.getSystemTable()->ConOut->ClearScreen(efi.getSystemTable()->ConOut);
 
-    /*  */
-    initGDTR();
-    initIDTR();
+    /*  /
+     initGDTR();
+     initIDTR();
+     */
 
-    efi.getSystemTable()->ConOut->OutputString(efi.getSystemTable()->ConOut, (EFI::CHAR16 *)L"Linking to you, access our connection!\r\nKizunaOS, boot up!!\n\r\n");
+    FrameBuffer *FrameBuffer = initFrameBuffer(efi.getGraphicsOutputProtocol());
 
     /* Ready For ExitBootServices() */
+    efi.getSystemTable()->ConOut->ClearScreen(efi.getSystemTable()->ConOut);
     EFI::EFI_STATUS status;
     EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
     EFI::UINTN MemoryMapSize = 0;
@@ -35,5 +47,6 @@ void BootLoader(EFI::EFI_HANDLE ImageHandle, EFI::EFI_SYSTEM_TABLE *SystemTable)
     } while (status != EFI::EFI_SUCCESS);
 
     /* Kernel Start */
-
+    // load_kernel(&efi, FrameBuffer);
+    kernel_start(FrameBuffer);
 }

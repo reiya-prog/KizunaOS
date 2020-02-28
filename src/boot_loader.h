@@ -2,5 +2,6 @@
 
 #include "main.h"
 #include "efi.h"
+#include "elf.h"
 
-void BootLoader(EFI::EFI_HANDLE ImageHandle, EFI::EFI_SYSTEM_TABLE *SystemTable);
+void boot_loader(EFI::EFI_HANDLE ImageHandle, EFI::EFI_SYSTEM_TABLE *SystemTable);

@@ -6,6 +6,6 @@
 #define max(a, b) a > b ? a : b
 
 EFI::CHAR16 getc(EFI *efi);
-void putc(EFI *efi, EFI::CHAR16 chara);
-void puts(EFI *efi, EFI::CHAR16 *str);
-void puth(unsigned long long val, unsigned char num_digits, EFI *efi);
+void putc(FrameBuffer *fb, char chara);
+void puts(FrameBuffer *fb, char *str);
+void puts_font(FrameBuffer *fb, char *str);

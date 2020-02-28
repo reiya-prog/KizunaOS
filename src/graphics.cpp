@@ -1,16 +1,15 @@
 #include "main.h"
 
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_white = {0x00, 0x00, 0xff, 0xff};
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_black = {0x00, 0x00, 0x00, 0xff};
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_blue  = {0xff, 0x00, 0x00, 0xff};
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_green = {0x00, 0xff, 0x00, 0xff};
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_red   = {0x00, 0x00, 0xff, 0xff};
+PixelFormat Color_White = {0xff, 0xff, 0xff, 0xff};
+PixelFormat Color_Black = {0x00, 0x00, 0x00, 0xff};
+PixelFormat Color_Blue = {0xff, 0x00, 0x00, 0xff};
+PixelFormat Color_Green = {0x00, 0xff, 0x00, 0xff};
+PixelFormat Color_Red = {0x00, 0x00, 0xff, 0xff};
 
-void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
+void draw_pixel(unsigned int x, unsigned int y, PixelFormat color, FrameBuffer *fb)
 {
-    unsigned int HorizontalResolution = efi->getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution;
-    EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *base = reinterpret_cast<EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *>(efi->getGraphicsOutputProtocol()->Mode->FrameBufferBase);
-    EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *point = base + (HorizontalResolution * y) + x;
+    PixelFormat *base = reinterpret_cast<PixelFormat *>(fb->FrameBufferBase);
+    PixelFormat *point = base + (fb->ResolutionH * y) + x;
 
     point->Blue = color.Blue;
     point->Green = color.Green;
@@ -18,25 +17,24 @@ void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIX
     point->Reserved = color.Reserved;
 }
 
-void draw_rect(RECT rect, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi)
+void draw_rect(RECT rect, PixelFormat color, FrameBuffer *fb)
 {
     unsigned int i;
     for (i = rect.x; i < (rect.x + rect.w); ++i)
-        draw_pixel(i, rect.y, color, efi);
+        draw_pixel(i, rect.y, color, fb);
     for (i = rect.x; i < (rect.x + rect.w); ++i)
-        draw_pixel(i, rect.y + rect.h - 1, color, efi);
+        draw_pixel(i, rect.y + rect.h - 1, color, fb);
 
     for (i = rect.y; i < (rect.y + rect.h); ++i)
-        draw_pixel(rect.x, i, color, efi);
+        draw_pixel(rect.x, i, color, fb);
     for (i = rect.y; i < (rect.y + rect.h); ++i)
-        draw_pixel(rect.x + rect.w - 1, i, color, efi);
+        draw_pixel(rect.x + rect.w - 1, i, color, fb);
 }
 
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL get_pixel(unsigned int x, unsigned int y, EFI *efi)
+PixelFormat get_pixel(unsigned int x, unsigned int y, FrameBuffer *fb)
 {
-    unsigned int HorizontalResolution = efi->getGraphicsOutputProtocol()->Mode->Info->HorizontalResolution;
-    EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *base = reinterpret_cast<EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *>(efi->getGraphicsOutputProtocol()->Mode->FrameBufferBase);
-    EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL *point = base + (HorizontalResolution * y) + x;
+    PixelFormat *base = reinterpret_cast<PixelFormat *>(fb->FrameBufferBase);
+    PixelFormat *point = base + (fb->ResolutionH * y) + x;
 
     return *point;
 }

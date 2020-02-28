@@ -1,0 +1,2 @@
+.global jmp_kernel
+    

@@ -7,12 +7,28 @@ typedef struct{
     unsigned int w, h;
 } RECT;
 
-extern EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_white;
-extern EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_black;
-extern EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_blue;
-extern EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_green;
-extern EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color_red;
+typedef struct
+{
+    unsigned char Blue;
+    unsigned char Green;
+    unsigned char Red;
+    unsigned char Reserved;
+} PixelFormat;
 
-void draw_pixel(unsigned int x, unsigned int y, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL color, EFI *efi);
-void draw_rect(RECT rect, EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL bltPixel, EFI *efi);
-EFI::EFI_GRAPHICS_OUTPUT_BLT_PIXEL get_pixel(unsigned int x, unsigned int y, EFI *efi);
+typedef struct
+{
+    unsigned long long *FrameBufferBase;
+    unsigned long long FrameBufferSize;
+    unsigned int ResolutionH;
+    unsigned int ResolutionV;
+} FrameBuffer;
+
+extern PixelFormat Color_White;
+extern PixelFormat Color_Black;
+extern PixelFormat Color_Blue;
+extern PixelFormat Color_Green;
+extern PixelFormat Color_Red;
+
+void draw_pixel(unsigned int x, unsigned int y, PixelFormat color, FrameBuffer *fb);
+void draw_rect(RECT rect, PixelFormat bltPixel, FrameBuffer *fb);
+PixelFormat get_pixel(unsigned int x, unsigned int y, FrameBuffer *fb);

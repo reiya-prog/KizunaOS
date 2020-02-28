@@ -1,44 +1,53 @@
 #include "main.h"
 
-EFI::CHAR16 getc(EFI *efi)
+void putc(FrameBuffer *fb, char chara)
 {
-    EFI::EFI_INPUT_KEY key;
-    unsigned long long waitidx;
-    efi->getSystemTable()->BootServices->WaitForEvent(1, &(efi->getSystemTable()->ConIn->WaitForKey), &waitidx);
-    efi->getSystemTable()->ConIn->ReadKeyStroke(efi->getSystemTable()->ConIn, &key);
-    return key.UnicodeChar | key.ScanCode;
-}
-
-void putc(EFI *efi, EFI::CHAR16 chara)
-{
-    unsigned short str[4];
-    if (chara == L'\r')
+    char *str = nullptr;
+    if (chara == '\r')
     {
-        str[0] = L'\r';
-        str[1] = L'\n';
-        str[2] = L'\0';
+        str[0] = '\n';
+        str[1] = '\0';
     }
-    else if (chara == L'\n')
+    else if (chara == '\b')
     {
-        str[0] = '\r';
-        str[1] = '\n';
-        str[2] = '\0';
-    }
-    else if (chara == L'\b')
-    {
-        str[0] = L'\b';
-        str[1] = L' ';
-        str[2] = L'\b';
-        str[3] = L'\0';
+        str[0] = '\b';
+        str[1] = ' ';
+        str[2] = '\b';
+        str[3] = '\0';
     }
     else
     {
         str[0] = chara;
-        str[1] = L'\0';
+        str[1] = '\0';
     }
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, str);
+    puts_font(fb, str);
 }
 
-void puts(EFI *efi, EFI::CHAR16 *str){
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, str);
+void puts(FrameBuffer *fb, char *str)
+{
+    puts_font(fb, str);
+}
+
+void puts_font(FrameBuffer *fb, char *str)
+{
+    int basex = 1, basey = 1;
+    for (; *str != '\0'; ++str)
+    {
+        if (*str == '\n'){
+            basex = 1;
+            basey += 19;
+            continue;
+        }
+        for (int y = 0; y < 16; ++y)
+        {
+            for (int x = 0; x < 8; ++x)
+            {
+                if (font_map[*str][y][x])
+                {
+                    draw_pixel(basex + x, basey + y, Color_White, fb);
+                }
+            }
+        }
+        basex += 9;
+    }
 }
