@@ -5,7 +5,14 @@
 #define CONST const
 #define EFIAPI
 
+#define EFI_FILE_MODE_READ 0x0000000000000001
+#define EFI_FILE_MODE_WRITE 0x0000000000000002
+#define EFI_FILE_MODE_CREATE 0x8000000000000000
+
 // #define EFI_BOOT_SERVICES_SIGNATURE 0x56524553544f4f42
+// #define EFI_FILE_PROTOCOL_REVISION 0x00010000
+// #define EFI_FILE_PROTOCOL_REVISION2 0x00020000
+// #define EFI_FILE_PROTOCOL_LATEST_REVISION EFI_FILE_PROTOCOL_REVISION2
 
 class EFI
 {
@@ -85,6 +92,21 @@ public:
         EFI_IP_ADDRESS_CONFLICT,
         EFI_HTTP_ERROR
     } EFI_STATUS_CODES;
+
+    typedef struct
+    {
+        UINT16 Year;
+        UINT8 Month;
+        UINT8 Day;
+        UINT8 Hour;
+        UINT8 Minute;
+        UINT8 Second;
+        UINT8 Padl;
+        UINT32 Nanosecond;
+        INT16 TimeZone;
+        UINT8 Daylight;
+        UINT8 Pad2;
+    } EFI_TIME;
 
     typedef struct
     {
@@ -310,6 +332,71 @@ public:
 
     typedef struct
     {
+        UINT64 Size;
+        UINT64 FileSize;
+        UINT64 PhysicalSize;
+        EFI_TIME CreateTime;
+        EFI_TIME LastAccessTime;
+        EFI_TIME ModificationTime;
+        UINT64 Attribute;
+        CHAR16 FileName[];
+    } EFI_FILE_INFO;
+
+    typedef struct _EFI_FILE_PROTOCOL
+    {
+        UINT64 Revision;
+        EFI_STATUS(EFIAPI *Open)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            OUT _EFI_FILE_PROTOCOL **NewHandle,
+            IN CHAR16 *FileName,
+            IN UINT64 OpenMode,
+            IN UINT64 Attributes);
+        EFI_STATUS(EFIAPI *Close)
+        (
+            IN _EFI_FILE_PROTOCOL *This);
+        EFI_STATUS(EFIAPI *Delete)
+        (
+            IN _EFI_FILE_PROTOCOL *This);
+        EFI_STATUS(EFIAPI *Read)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            IN OUT UINTN *BufferSize,
+            OUT VOID *Buffer);
+        EFI_STATUS(EFIAPI *Write)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            IN OUT INTN *BufferSize,
+            IN VOID *Buffer);
+        unsigned long long buf[2];
+        EFI_STATUS(EFIAPI *GetInfo)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            IN EFI_GUID *InformationType,
+            IN OUT UINTN *BufferSize,
+            OUT VOID *Buffer);
+        EFI_STATUS(EFIAPI *SetInfo)
+        (
+            IN _EFI_FILE_PROTOCOL *This,
+            IN EFI_GUID *InformationType,
+            IN UINTN BufferSize,
+            IN VOID *Buffer);
+        EFI_STATUS(EFIAPI *Flush)
+        (
+            IN _EFI_FILE_PROTOCOL *This);
+    } EFI_FILE_PROTOCOL;
+
+    typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL
+    {
+        UINT64 Revision;
+        EFI_STATUS(EFIAPI *OpenVolume)
+        (
+            IN _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *This,
+            OUT EFI_FILE_PROTOCOL **Root);
+    } EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+
+    typedef struct
+    {
         char buf1[24];
         //
         // Task Priority Services
@@ -448,9 +535,14 @@ public:
     {
         return this->GraphicsOutputProtocol;
     }
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *getSimpleFileSystemProtocol()
+    {
+        return this->SimpleFileSystemProtocol;
+    }
 
 private:
     EFI_SYSTEM_TABLE *SystemTable = nullptr;
     EFI_SIMPLE_POINTER_PROTOCOL *SimplePointerProtocol = nullptr;
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutputProtocol = nullptr;
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *SimpleFileSystemProtocol = nullptr;
 };

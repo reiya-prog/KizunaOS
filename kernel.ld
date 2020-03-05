@@ -2,11 +2,14 @@ ENTRY(kernel_start)
 
 SECTIONS
 {
-    .text ALIGN(0x1000): {
+    . = 0x101000;
+    .text : {
         *(.text)
     }
-    . += 0x10000;
-    .data ALIGN(0x1000): {
+    .rodata : {
+        *(.rodata)
+    }
+    .data : {
         *(.data)
     }
     .got : {

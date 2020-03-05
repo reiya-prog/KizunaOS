@@ -1,5 +1,4 @@
 #include "main.h"
-#include "boot_loader.h"
 
 extern "C"{
     void efi_main(

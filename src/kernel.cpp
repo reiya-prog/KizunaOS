@@ -7,6 +7,6 @@ extern "C"{
 }
 
 void kernel(FrameBuffer *FrameBuffer){
-    puts_font(FrameBuffer, "Linking to you, access our connection!\nKizunaOS, boot up!!\n\n");
+    puts(FrameBuffer, "Linking to you, access our connection!\nKizunaOS, boot up!!\n\n", Color_Black);
     while(1);
 }
