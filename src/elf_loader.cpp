@@ -169,6 +169,7 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     bootStruct.frameBuffer = *fb;
     kernel_file->Close(kernel_file);
     root->Close(root);
+    efi->getSystemTable()->ConOut->ClearScreen(efi->getSystemTable()->ConOut);
 
     /* Ready For ExitBootServices() */
     EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
@@ -177,7 +178,6 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     EFI::UINT32 DescriptorVersion;
     do
     {
-        efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"exit\r\n");
         status = efi->getSystemTable()->BootServices->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey, &DescriptorSize, &DescriptorVersion);
         while (status == EFI::EFI_BUFFER_TOO_SMALL)
         {
@@ -191,8 +191,8 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
         status = efi->getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
     } while (status != EFI::EFI_SUCCESS);
 
-    kernel_start(efi, &bootStruct);
-    typedef void kernel_start(EFI* , BootStruct *);
+    kernel_start(&bootStruct);
+    typedef void kernel_start(BootStruct *);
     kernel_start *entry_point = (kernel_start *)(elf_header->e_entry + kernel_addr);
-    entry_point(efi, &bootStruct);
+    entry_point(&bootStruct);
 }

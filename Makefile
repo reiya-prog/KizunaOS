@@ -55,7 +55,7 @@ KERNEL_LDFLAGS = \
 QEMU = qemu-system-x86_64
 OVMF = ovmf/bios64.bin
 QEMUflags = \
-	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR)
+	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR) -monitor stdio
 
 BIOS_SRCS = \
 	boot_loader.cpp efi_main.cpp efi.cpp graphics.cpp stdfunc.cpp elf_loader.cpp kernel.cpp asm.s

@@ -8,5 +8,5 @@ typedef struct {
     FrameBuffer frameBuffer;
 } BootStruct;
 
-extern "C" void kernel_start(EFI* efi, BootStruct* BootStruct);
+extern "C" void kernel_start(BootStruct* BootStruct);
 void kernel(FrameBuffer *FrameBuffer);
