@@ -1,12 +1,14 @@
 #include "main.h"
 
 extern "C"{
-    void kernel_start(FrameBuffer *FrameBuffer){
-        kernel(FrameBuffer);
+    void kernel_start(EFI* efi, BootStruct* BootStruct){
+        efi->getSystemTable()->ConOut->ClearScreen(efi->getSystemTable()->ConOut);
+        sleep_hlt();
+        kernel(&BootStruct->frameBuffer);
     }
 }
 
 void kernel(FrameBuffer *FrameBuffer){
-    puts(FrameBuffer, "Linking to you, access our connection!\nKizunaOS, boot up!!\n\n", Color_Black);
+    puts(FrameBuffer, "KizunaOS boot up!\n");
     while(1);
 }

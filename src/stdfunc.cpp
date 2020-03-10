@@ -40,7 +40,6 @@ void puts(FrameBuffer *fb, char *str)
 
 void puts(FrameBuffer *fb, char *str, PixelFormat back_color)
 {
-    while(1);
     puts_font(fb, str, back_color, Color_White);
 }
 

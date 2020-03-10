@@ -2,17 +2,15 @@ ENTRY(kernel_start)
 
 SECTIONS
 {
-    . = 0x101000;
+    . += 0x101000;
     .text : {
         *(.text)
     }
-    .rodata : {
-        *(.rodata)
-    }
     .data : {
         *(.data)
+        *(.rodata)
     }
-    .got : {
-        *(.got)
+    .bss : {
+        *(.bss)
     }
 }

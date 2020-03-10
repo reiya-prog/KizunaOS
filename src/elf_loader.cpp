@@ -42,22 +42,22 @@ int strcmp(const char *s1, const char *s2)
     return *ss1 - *ss2;
 }
 
-void memset(void *dst, int c, int n)
+void memset(void *dst, int value, int size)
 {
-    const unsigned char uc = c;
-    unsigned char *p = (unsigned char *)dst;
-    while (n-- > 0)
+    const unsigned char uc = value;
+    unsigned char *p = reinterpret_cast<unsigned char *>(dst);
+    while (size-- > 0)
         *p++ = uc;
 }
 
 extern "C"
 {
-    void memcpy(void *dst, const void *src, int n)
+    void memcpy(void *dst, const void *src, int size)
     {
-        char *p1 = (char *)dst;
-        const char *p2 = (const char *)src;
+        char *p1 = reinterpret_cast<char *>(dst);
+        const char *p2 = reinterpret_cast<const char *>(src);
 
-        while (n-- > 0)
+        while (size-- > 0)
             *p1++ = *p2++;
     }
 }
@@ -141,117 +141,37 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     unsigned long long elf_head_size = sizeof(elf_header);
     /* header's magic number == ELF ? */
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Check ELF magic number in ELF header...");
-    if ((EFI::CHAR8 *)elf_header->e_ident[0] == (EFI::CHAR8 *)'\x7f' && (EFI::CHAR8 *)elf_header->e_ident[1] == (EFI::CHAR8 *)'E' && (EFI::CHAR8 *)elf_header->e_ident[2] == (EFI::CHAR8 *)'L' && (EFI::CHAR8 *)elf_header->e_ident[3] == (EFI::CHAR8 *)'F'){
+    if ((EFI::CHAR8 *)elf_header->e_ident[0] == (EFI::CHAR8 *)'\x7f' && (EFI::CHAR8 *)elf_header->e_ident[1] == (EFI::CHAR8 *)'E' && (EFI::CHAR8 *)elf_header->e_ident[2] == (EFI::CHAR8 *)'L' && (EFI::CHAR8 *)elf_header->e_ident[3] == (EFI::CHAR8 *)'F')
+    {
         efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"done.\r\n");
         efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"This file is correct ELF file\r\n");
-    }else{
+    }
+    else
+    {
         efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"\r\nHeader's magic number is not ELF.\r\n");
         efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"This file is not a correct ELF file.\r\n");
         return;
     }
-    Elf64_Shdr *elf_section = reinterpret_cast<Elf64_Shdr *>(kernel_addr + elf_header->e_shoff);
-    Elf64_Phdr *elf_program = reinterpret_cast<Elf64_Phdr *>(kernel_addr + elf_header->e_phoff);
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF header successfully checked!\r\n");
 
-    unsigned long long last_offset;
-    last_offset = 0;
+    /* Relocate sections */
+   /*  Elf64_Phdr *elf_program_headers = reinterpret_cast<Elf64_Phdr *>(kernel_addr + elf_header->e_phoff);
+    Elf64_Shdr *elf_section_headers = reinterpret_cast<Elf64_Shdr *>(kernel_addr + elf_header->e_shoff);
+
     for (unsigned int i = 0; i < elf_header->e_phnum; ++i)
     {
-        Elf64_Phdr program_header = elf_program[i];
-        if (program_header.p_type != PT_LOAD)
-            continue;
-        last_offset = max(last_offset, program_header.p_vaddr + program_header.p_memsz);
+        Elf64_Phdr program_header = elf_program_headers[i];
+        memcpy(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr), reinterpret_cast<void *>(kernel_addr + program_header.p_offset), program_header.p_filesz);
+        memset(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr + program_header.p_filesz), 0, program_header.p_memsz - program_header.p_filesz);
     }
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"success!\r\n");
-
-    void *buffer;
-    long long sta = efi->getSystemTable()->BootServices->AllocatePool(EFI::EfiLoaderData, last_offset, &buffer);
-    if (sta == EFI::EFI_SUCCESS)
-        efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"pool success!\r\n");
-    for (unsigned int i = 0; i < elf_header->e_phnum; ++i)
-    {
-        Elf64_Phdr program_header = elf_program[i];
-        if (program_header.p_type != PT_LOAD)
-            continue;
-        memcpy((char *)buffer + program_header.p_vaddr, (char *)kernel_addr + program_header.p_offset, program_header.p_filesz);
-        memset((char *)buffer + program_header.p_vaddr + program_header.p_filesz, 0, program_header.p_memsz - program_header.p_filesz);
-    }
-
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"success!\r\n");
-    unsigned char *section_table = (unsigned char *)(kernel_addr + elf_section[elf_header->e_shstrndx].sh_offset);
-    Elf64_Shdr rela_dyn_section, rela_plt_section, dynsym_section, dynstr_section;
-    rela_dyn_section.sh_size = 0;
-    rela_plt_section.sh_size = 0;
-    dynsym_section.sh_size = 0;
-    dynstr_section.sh_size = 0;
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"success!\r\n");
-    puth(efi, elf_header->e_shnum, 8);
-    for (unsigned int i = 0; i < elf_header->e_shnum; ++i)
-    {
-        Elf64_Shdr section_header = elf_section[i];
-        unsigned char *section_name = section_table + section_header.sh_name;
-        if (!strcmp((char *)section_name, ".rela.dyn"))
-        {
-            puth(efi, 1, 8);
-            rela_dyn_section = section_header;
-            puth(efi, section_header.sh_size, 8);
-        }
-        else if (!strcmp((char *)section_name, ".rela.plt"))
-        {
-            puth(efi, 2, 8);
-            rela_plt_section = section_header;
-            puth(efi, section_header.sh_size, 8);
-        }
-        else if (!strcmp((char *)section_name, ".dynsym"))
-        {
-            puth(efi, 3, 8);
-            dynsym_section = section_header;
-            puth(efi, section_header.sh_size, 8);
-        }
-        else if (!strcmp((char *)section_name, ".dynstr"))
-        {
-            puth(efi, 4, 8);
-            dynstr_section = section_header;
-            puth(efi, section_header.sh_size, 8);
-        }
-    }
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"success!\r\n");
-
-    Elf64_Sym *sym_table = (Elf64_Sym *)(kernel_addr + dynsym_section.sh_offset);
-    Elf64_Rela *rela_dyn = (Elf64_Rela *)(kernel_addr + rela_dyn_section.sh_offset);
-    Elf64_Rela *rela_plt = (Elf64_Rela *)(kernel_addr + rela_plt_section.sh_offset);
-
-    for (unsigned int i = 0; i < rela_dyn_section.sh_size / sizeof(Elf64_Rela); ++i)
-    {
-        Elf64_Sym s = sym_table[ELF64_R_SYM(rela_dyn[i].r_info)];
-        Elf64_Rela r = rela_dyn[i];
-        void *to = (char *)buffer + r.r_offset;
-        *(uint64_t *)to = (uint64_t)((char *)buffer + s.st_value);
-    }
-
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"succ!\r\n");
-    for (unsigned int i = 0; i < rela_plt_section.sh_size / sizeof(Elf64_Rela); ++i)
-    {
-        Elf64_Sym s = sym_table[ELF64_R_SYM(rela_plt[i].r_info)];
-        Elf64_Rela r = rela_plt[i];
-
-        void *to = (char *)buffer + r.r_offset;
-        *(uint64_t *)to = (uint64_t)((char *)buffer + s.st_value);
-    }
-
-    uint64_t entry_offset = 0;
-    for (unsigned int i = 0; i < dynsym_section.sh_size / sizeof(Elf64_Sym); ++i)
-    {
-        Elf64_Sym s = sym_table[i];
-        char *sym_name = ((char *)(kernel_addr + dynstr_section.sh_offset)) + s.st_name;
-        if (!strcmp(sym_name, "kernel_start"))
-        {
-            efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"find kernel\r\n");
-            entry_offset = s.st_value;
-        }
-    }
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF sections successfully relocated!\r\n"); */
+    BootStruct bootStruct;
+    bootStruct.frameBuffer = *fb;
 
     /* Ready For ExitBootServices() */
-    EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
+    kernel_file->Close(kernel_file);
+    root->Close(root);
+/*     EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
     EFI::UINTN MemoryMapSize = 0;
     EFI::UINTN MapKey, DescriptorSize;
     EFI::UINT32 DescriptorVersion;
@@ -269,13 +189,10 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
             status = efi->getSystemTable()->BootServices->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey, &DescriptorSize, &DescriptorVersion);
         }
         status = efi->getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
-    } while (status != EFI::EFI_SUCCESS);
+    } while (status != EFI::EFI_SUCCESS);  */
 
-
-    puts(fb, "KizunaOS, boot up!!\n\n");
-
-    // kernel_start(fb);
-    typedef void EntryPoint(FrameBuffer *FrameBuffer);
-    EntryPoint* entry_point = (EntryPoint *)(elf_header->e_entry);
-    entry_point(fb); //*/
+    // kernel_start(efi, &bootStruct);
+    typedef void kernel_start(EFI* efi, BootStruct *);
+    kernel_start *entry_point = (kernel_start *)(elf_header->e_entry);
+    entry_point(efi, &bootStruct);
 }
