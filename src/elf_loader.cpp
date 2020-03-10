@@ -111,7 +111,7 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     kernel_size = file_sizeof(efi, kernel_file);
     EFI::EFI_PHYSICAL_ADDRESS kernel_addr = 0x00100000lu;
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Allocate memory to 0x100000...");
-    status = efi->getSystemTable()->BootServices->AllocatePages(EFI::AllocateAddress, EFI::EfiLoaderData, (kernel_size + 4095) / 4096, &kernel_addr);
+    status = efi->getSystemTable()->BootServices->AllocatePages(EFI::AllocateAddress, EFI::EfiLoaderData, (kernel_size + 0xfff) / 0x1000, &kernel_addr);
     if (status == EFI::EFI_SUCCESS)
     {
         efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"done.\r\n");
@@ -155,7 +155,7 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF header successfully checked!\r\n");
 
     /* Relocate sections */
-   /*  Elf64_Phdr *elf_program_headers = reinterpret_cast<Elf64_Phdr *>(kernel_addr + elf_header->e_phoff);
+    Elf64_Phdr *elf_program_headers = reinterpret_cast<Elf64_Phdr *>(kernel_addr + elf_header->e_phoff);
     Elf64_Shdr *elf_section_headers = reinterpret_cast<Elf64_Shdr *>(kernel_addr + elf_header->e_shoff);
 
     for (unsigned int i = 0; i < elf_header->e_phnum; ++i)
@@ -164,14 +164,14 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
         memcpy(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr), reinterpret_cast<void *>(kernel_addr + program_header.p_offset), program_header.p_filesz);
         memset(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr + program_header.p_filesz), 0, program_header.p_memsz - program_header.p_filesz);
     }
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF sections successfully relocated!\r\n"); */
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF sections successfully relocated!\r\n");
     BootStruct bootStruct;
     bootStruct.frameBuffer = *fb;
-
-    /* Ready For ExitBootServices() */
     kernel_file->Close(kernel_file);
     root->Close(root);
-/*     EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
+
+    /* Ready For ExitBootServices() */
+    EFI::EFI_MEMORY_DESCRIPTOR *MemoryMap = nullptr;
     EFI::UINTN MemoryMapSize = 0;
     EFI::UINTN MapKey, DescriptorSize;
     EFI::UINT32 DescriptorVersion;
@@ -189,10 +189,11 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
             status = efi->getSystemTable()->BootServices->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey, &DescriptorSize, &DescriptorVersion);
         }
         status = efi->getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
-    } while (status != EFI::EFI_SUCCESS);  */
+    } while (status != EFI::EFI_SUCCESS);
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"UEFI Boot Services successfully exited!\r\n");
 
-    // kernel_start(efi, &bootStruct);
-    typedef void kernel_start(EFI* efi, BootStruct *);
-    kernel_start *entry_point = (kernel_start *)(elf_header->e_entry);
+    kernel_start(efi, &bootStruct);
+    typedef void kernel_start(EFI* , BootStruct *);
+    kernel_start *entry_point = (kernel_start *)(elf_header->e_entry + kernel_addr);
     entry_point(efi, &bootStruct);
 }

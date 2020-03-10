@@ -2,8 +2,8 @@
 
 extern "C"{
     void kernel_start(EFI* efi, BootStruct* BootStruct){
-        efi->getSystemTable()->ConOut->ClearScreen(efi->getSystemTable()->ConOut);
         sleep_hlt();
+        efi->getSystemTable()->ConOut->ClearScreen(efi->getSystemTable()->ConOut);
         kernel(&BootStruct->frameBuffer);
     }
 }
