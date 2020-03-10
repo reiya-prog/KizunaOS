@@ -190,7 +190,6 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
         }
         status = efi->getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
     } while (status != EFI::EFI_SUCCESS);
-    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"UEFI Boot Services successfully exited!\r\n");
 
     kernel_start(efi, &bootStruct);
     typedef void kernel_start(EFI* , BootStruct *);
