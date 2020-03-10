@@ -11,12 +11,9 @@ KERNEL_TARGET = $(OUTDIR)/$(KERNEL_NAME)
 
 CC = clang++
 BIOS_CFLAGS = \
-	-MMD -MP \
 	--target=x86_64-pc-win32-coff \
-	-fno-stack-protector -fshort-wchar \
-	-nostdlibinc -mno-red-zone \
 	-Wall -Wextra -Wpedantic \
-	-fno-builtin
+	-Wl,-pie \
 
 LOADER_CFAGS = \
 

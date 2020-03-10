@@ -4,8 +4,6 @@
 
 EFI::EFI_GUID EFI_FILE_INFO_GUID = {0x09576e92, 0x6d3f, 0x11d2, {0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b}};
 
-extern "C" void jump_kernel(FrameBuffer *fb, unsigned long long entry_point);
-
 void puts(EFI *efi, unsigned short *s)
 {
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, s);
@@ -191,8 +189,7 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
         status = efi->getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
     } while (status != EFI::EFI_SUCCESS);
 
-    kernel_start(&bootStruct);
-    typedef void kernel_start(BootStruct *);
-    kernel_start *entry_point = (kernel_start *)(elf_header->e_entry + kernel_addr);
-    entry_point(&bootStruct);
+    // kernel_start(&bootStruct);
+    unsigned long long entry_point = elf_header->e_entry + kernel_addr;
+    jump_entry(&bootStruct, entry_point);
 }
