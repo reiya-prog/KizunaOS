@@ -7,8 +7,8 @@ uint8_t f() {
     return a;
 }
 
-int _start(uint8_t *frame_buffer, uint64_t size) {
-    for (i = 0; i < size; i ++) {
+int _start(uint8_t *frame_buffer) {
+    for (i = 0; i < 1000; i ++) {
         frame_buffer[i] = f();
     }
 

@@ -108,20 +108,27 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     unsigned long long kernel_size = 0;
     kernel_size = file_sizeof(efi, kernel_file);
     EFI::EFI_PHYSICAL_ADDRESS kernel_addr = 0x00100000lu;
+    EFI::EFI_PHYSICAL_ADDRESS kernel_tmp_addr = 0x01100000lu;
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Allocate memory to 0x100000...");
     status = efi->getSystemTable()->BootServices->AllocatePages(EFI::AllocateAddress, EFI::EfiLoaderData, (kernel_size + 0xfff) / 0x1000, &kernel_addr);
     if (status == EFI::EFI_SUCCESS)
     {
-        efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"done.\r\n");
+        status = efi->getSystemTable()->BootServices->AllocatePages(EFI::AllocateAddress, EFI::EfiLoaderData, (kernel_size + 0xfff) / 0x1000, &kernel_tmp_addr);
+        if (status == EFI::EFI_SUCCESS)
+        {
+            efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"done.\r\n");
+        }
+        else
+        {
+            efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"\r\nCannot allocate memory to 0x100000.\r\n");
+            efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"An unexpected error has occurred in allocating memory.\r\n");
+            return;
+        }
     }
-    else
-    {
-        efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"\r\nCannot allocate memory to 0x100000.\r\n");
-        efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"An unexpected error has occurred in allocating memory.\r\n");
-        return;
-    }
+
+
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Read kernel data to memory...");
-    status = kernel_file->Read(kernel_file, &kernel_size, reinterpret_cast<EFI::VOID *>(kernel_addr));
+    status = kernel_file->Read(kernel_file, &kernel_size, reinterpret_cast<EFI::VOID *>(kernel_tmp_addr));
     if (status == EFI::EFI_SUCCESS)
     {
         efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"done.\r\n");
@@ -135,7 +142,7 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Kernel data successfully stored to memory!\r\n");
 
     /* check elf-header */
-    Elf64_Ehdr *elf_header = reinterpret_cast<Elf64_Ehdr *>(kernel_addr);
+    Elf64_Ehdr *elf_header = reinterpret_cast<Elf64_Ehdr *>(kernel_tmp_addr);
     unsigned long long elf_head_size = sizeof(elf_header);
     /* header's magic number == ELF ? */
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Check ELF magic number in ELF header...");
@@ -153,20 +160,60 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF header successfully checked!\r\n");
 
     /* Relocate sections */
-    Elf64_Phdr *elf_program_headers = reinterpret_cast<Elf64_Phdr *>(kernel_addr + elf_header->e_phoff);
-    Elf64_Shdr *elf_section_headers = reinterpret_cast<Elf64_Shdr *>(kernel_addr + elf_header->e_shoff);
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Relocate program data...");
+    Elf64_Phdr *elf_program_headers = reinterpret_cast<Elf64_Phdr *>(kernel_tmp_addr + elf_header->e_phoff);
+    Elf64_Shdr *elf_section_headers = reinterpret_cast<Elf64_Shdr *>(kernel_tmp_addr + elf_header->e_shoff);
 
     for (unsigned int i = 0; i < elf_header->e_phnum; ++i)
     {
         Elf64_Phdr program_header = elf_program_headers[i];
-        memcpy(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr), reinterpret_cast<void *>(kernel_addr + program_header.p_offset), program_header.p_filesz);
+        if (program_header.p_type != PT_LOAD)
+            continue;
+        memcpy(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr), reinterpret_cast<void *>(kernel_tmp_addr + program_header.p_offset), program_header.p_filesz);
         memset(reinterpret_cast<void *>(kernel_addr + program_header.p_vaddr + program_header.p_filesz), 0, program_header.p_memsz - program_header.p_filesz);
     }
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"done.\r\n");
     efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"ELF sections successfully relocated!\r\n");
-    BootStruct bootStruct;
-    bootStruct.frameBuffer = *fb;
+
+    efi->getSystemTable()->ConOut->OutputString(efi->getSystemTable()->ConOut, (EFI::CHAR16 *)L"Relocate dynamic symbols...");
+    Elf64_Shdr symtab_sections;
+    for (unsigned int k = 0; k < elf_header->e_shnum; ++k)
+    {
+        Elf64_Shdr search_section = elf_section_headers[k];
+        if (search_section.sh_type != SHT_SYMTAB)
+            continue;
+        symtab_sections = search_section;
+        break;
+    }
+    for (unsigned int i = 0; i < elf_header->e_shnum; ++i)
+    {
+        Elf64_Shdr section_header = elf_section_headers[i];
+        if (section_header.sh_type != SHT_RELA)
+            continue;
+        for (unsigned int j = 0; j < section_header.sh_size / section_header.sh_entsize; ++j)
+        {
+            Elf64_Rela *rela = (Elf64_Rela *)(kernel_tmp_addr + section_header.sh_offset + section_header.sh_entsize * j);
+            Elf64_Sym *target_sym = nullptr;
+            for (unsigned int k = 0; k < symtab_sections.sh_size / symtab_sections.sh_entsize; ++k)
+            {
+                Elf64_Sym *search_sym = (Elf64_Sym *)(kernel_tmp_addr + symtab_sections.sh_offset + symtab_sections.sh_entsize * k);
+                if (search_sym->st_value != static_cast<unsigned long long>(rela->r_addend))
+                    continue;
+                target_sym = search_sym;
+                break;
+            }
+            unsigned long long *memto = (unsigned long long *)(kernel_addr + rela->r_offset);
+            *memto = kernel_addr + target_sym->st_value;
+        }
+    }
+
+    /* Make boot arguments */
+    unsigned long long entry_point = elf_header->e_entry + kernel_addr;
+    BootStruct boot_struct;
+    boot_struct.frameBuffer = *fb;
     kernel_file->Close(kernel_file);
     root->Close(root);
+    efi->getSystemTable()->BootServices->FreePages(kernel_tmp_addr, (kernel_size + 0xfff)/0x1000);
     efi->getSystemTable()->ConOut->ClearScreen(efi->getSystemTable()->ConOut);
 
     /* Ready For ExitBootServices() */
@@ -186,10 +233,11 @@ void load_kernel(EFI::EFI_HANDLE ImageHandle, EFI *efi, FrameBuffer *fb)
             status = efi->getSystemTable()->BootServices->AllocatePool(EFI::EfiLoaderData, MemoryMapSize, reinterpret_cast<EFI::VOID **>(&MemoryMap));
             status = efi->getSystemTable()->BootServices->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey, &DescriptorSize, &DescriptorVersion);
         }
+        boot_struct.frameBuffer.FrameBufferBase = reinterpret_cast<unsigned long long *>(efi->getGraphicsOutputProtocol()->Mode->FrameBufferBase);
+        puts(&boot_struct.frameBuffer, "Exited!");
         status = efi->getSystemTable()->BootServices->ExitBootServices(ImageHandle, MapKey);
     } while (status != EFI::EFI_SUCCESS);
 
-    // kernel_start(&bootStruct);
-    unsigned long long entry_point = elf_header->e_entry + kernel_addr;
-    jump_entry(&bootStruct, entry_point);
+    unsigned long long stack_pointer = 0x7f0000lu;
+    jump_entry(&boot_struct, entry_point, stack_pointer);
 }

@@ -55,9 +55,9 @@ QEMUflags = \
 	-bios $(OVMF) -drive format=raw,file=fat:rw:$(OUTDIR) -monitor stdio
 
 BIOS_SRCS = \
-	boot_loader.cpp efi_main.cpp efi.cpp graphics.cpp stdfunc.cpp elf_loader.cpp kernel.cpp asm.s
+	boot_loader.cpp efi_main.cpp efi.cpp font.cpp graphics.cpp stdfunc.cpp elf_loader.cpp asm.s
 KERNEL_SRCS = \
-	kernel.cpp graphics.cpp stdfunc.cpp asm.s
+	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm.s
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))

@@ -1,5 +1,7 @@
 #include "main.h"
 
+int p = 100;
+
 extern "C"{
     void kernel_start(BootStruct* BootStruct){
         kernel(&BootStruct->frameBuffer);
@@ -7,6 +9,6 @@ extern "C"{
 }
 
 void kernel(FrameBuffer *FrameBuffer){
-    puts(FrameBuffer, "KizunaOS boot up!\n");
+    puts(FrameBuffer, "Linking to you, access our connection!\nKizunaOS, boot up!\n");
     sleep_hlt();
 }

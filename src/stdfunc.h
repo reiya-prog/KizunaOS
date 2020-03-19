@@ -5,6 +5,8 @@
 #define min(a, b) a > b ? b : a
 #define max(a, b) a > b ? a : b
 
+extern unsigned char font_map[256][16][8];
+
 void putc(FrameBuffer *fb, char chara);
 void putc(FrameBuffer *fb, char chara, PixelFormat back_color);
 void putc(FrameBuffer *fb, char chara, PixelFormat back_color, PixelFormat chara_color);
