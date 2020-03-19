@@ -1,4 +1,4 @@
-/app/NvVars
-/build/
-/winq.bat
-/.vscode/
+app/NvVars
+build/
+winq.bat
+.vscode/
