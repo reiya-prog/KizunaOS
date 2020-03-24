@@ -5,8 +5,9 @@
 #include "stdfunc.h"
 
 typedef struct {
-    FrameBuffer frameBuffer;
+    FrameBuffer frame_buffer;
 } BootStruct;
 
 extern "C" void kernel_start(BootStruct* BootStruct);
+void kernel_init();
 void kernel(FrameBuffer *FrameBuffer);

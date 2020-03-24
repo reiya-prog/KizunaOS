@@ -12,8 +12,7 @@ KERNEL_TARGET = $(OUTDIR)/$(KERNEL_NAME)
 CC = clang++
 BIOS_CFLAGS = \
 	--target=x86_64-pc-win32-coff \
-	-Wall -Wextra -Wpedantic \
-	-Wl,-pie \
+	-Wall -Wextra -Wpedantic
 
 LOADER_CFAGS = \
 
@@ -24,7 +23,8 @@ BIOS_CPPFLAGS = \
 	--target=x86_64-pc-win32-coff \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
 	-nostdlibinc -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable \
+	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast\
+	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings\
 	-fno-builtin \
 	-std=c++17
 
@@ -35,7 +35,8 @@ KERNEL_CPPFLAGS = \
 	--target=x86_64-unknown-none-elf \
 	-fno-stack-protector -fno-exceptions -fshort-wchar \
 	-nostdlibinc -mno-red-zone \
-	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable \
+	-Wall -Wextra -Wpedantic -Qunused-arguments -Wno-keyword-macro -Wno-char-subscripts -Wno-int-to-pointer-cast \
+	-Wno-c99-extensions -Wno-unused-parameter -Wno-unused-variable -Wno-writable-strings \
 	-fno-builtin \
 	-fPIC -Wl,-pie \
 	-std=c++17
@@ -57,7 +58,7 @@ QEMUflags = \
 BIOS_SRCS = \
 	boot_loader.cpp efi_main.cpp efi.cpp font.cpp graphics.cpp stdfunc.cpp elf_loader.cpp asm.s
 KERNEL_SRCS = \
-	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm.s
+	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm.s sprintf.cpp descriptor.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))
@@ -65,30 +66,30 @@ KERNEL_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .elf.o, $(basename $(KERNEL_SR
 DEPS := $(addprefix $(OBJDIR)/,$(patsubst $(SRCDIR)/%.cpp,%.d,$(SRCS)))
 
 .PHONY: all clean
-all: $(BIOS_TARGET) $(KERNEL_TARGET) Makefile
+all: Makefile $(APPDIR) $(OBJDIR) $(BIOS_TARGET) $(KERNEL_TARGET)
+
+$(APPDIR):
+	mkdir -p $(APPDIR)
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.s
-	mkdir -p $(OBJDIR)
 	$(CC) $(BIOS_CFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
-	mkdir -p $(OBJDIR)
 	$(CC) $(BIOS_CPPFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.elf.o:$(SRCDIR)/%.s
-	mkdir -p $(OBJDIR)
 	$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.elf.o:$(SRCDIR)/%.cpp
-	mkdir -p $(OBJDIR)
 	$(CC) $(KERNEL_CPPFLAGS) -o $@ -c $<
 
 $(BIOS_TARGET): $(BIOS_OBJS)
-	mkdir -p $(APPDIR)
 	$(LD_LINK) $(BIOS_LDFLAGS) -out:$(BIOS_TARGET) $(BIOS_OBJS)
 
 $(KERNEL_TARGET): $(KERNEL_OBJS) kernel.ld
-	mkdir -p $(APPDIR)
 	$(LD_LLD) $(KERNEL_LDFLAGS) -o $(KERNEL_TARGET) $(KERNEL_OBJS) --pic-executable
 
 run: $(TARGET)

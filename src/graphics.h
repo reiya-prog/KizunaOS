@@ -17,10 +17,10 @@ typedef struct
 
 typedef struct
 {
-    unsigned long long *FrameBufferBase;
-    unsigned long long FrameBufferSize;
-    unsigned int ResolutionH;
-    unsigned int ResolutionV;
+    unsigned long long *frame_buffer_base;
+    unsigned long long frame_buffer_size;
+    unsigned int resolution_H;
+    unsigned int resolution_V;
 } FrameBuffer;
 
 extern PixelFormat Color_White;
@@ -31,4 +31,5 @@ extern PixelFormat Color_Red;
 
 void draw_pixel(unsigned int x, unsigned int y, PixelFormat color, FrameBuffer *fb);
 void draw_rect(RECT rect, PixelFormat bltPixel, FrameBuffer *fb);
+void draw_box(RECT rect, PixelFormat color, FrameBuffer *fb);
 PixelFormat get_pixel(unsigned int x, unsigned int y, FrameBuffer *fb);

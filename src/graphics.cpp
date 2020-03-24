@@ -8,8 +8,8 @@ PixelFormat Color_Red = {0x00, 0x00, 0xff, 0xff};
 
 void draw_pixel(unsigned int x, unsigned int y, PixelFormat color, FrameBuffer *fb)
 {
-    PixelFormat *base = reinterpret_cast<PixelFormat *>(fb->FrameBufferBase);
-    PixelFormat *point = base + (fb->ResolutionH * y) + x;
+    PixelFormat *base = reinterpret_cast<PixelFormat *>(fb->frame_buffer_base);
+    PixelFormat *point = base + (fb->resolution_H * y) + x;
 
     point->Blue = color.Blue;
     point->Green = color.Green;
@@ -31,10 +31,22 @@ void draw_rect(RECT rect, PixelFormat color, FrameBuffer *fb)
         draw_pixel(rect.x + rect.w - 1, i, color, fb);
 }
 
+void draw_box(RECT rect, PixelFormat color, FrameBuffer *fb)
+{
+    unsigned int i, j;
+    for (i = rect.x; i < (rect.x + rect.w); ++i)
+    {
+        for (j = rect.y; j < (rect.y + rect.h); ++j)
+        {
+            draw_pixel(i, j, color, fb);
+        }
+    }
+}
+
 PixelFormat get_pixel(unsigned int x, unsigned int y, FrameBuffer *fb)
 {
-    PixelFormat *base = reinterpret_cast<PixelFormat *>(fb->FrameBufferBase);
-    PixelFormat *point = base + (fb->ResolutionH * y) + x;
+    PixelFormat *base = reinterpret_cast<PixelFormat *>(fb->frame_buffer_base);
+    PixelFormat *point = base + (fb->resolution_H * y) + x;
 
     return *point;
 }

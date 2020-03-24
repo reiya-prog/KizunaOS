@@ -6,7 +6,9 @@
 #include "graphics.h"
 #include "kernel.h"
 #include "stdfunc.h"
-#include "font.h"
 #include "asm.h"
+#include "sprintf.h"
+#include "descriptor.h"
 #include <stddef.h>
 #include <cstdint>
+#include <stdarg.h>
