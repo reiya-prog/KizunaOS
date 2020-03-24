@@ -5,6 +5,10 @@ sleep_hlt:
     hlt
     jmp sleep_hlt
 
+.global default_handler
+default_handler:
+    jmp default_handler
+
 .global load_gdt
 load_gdt:
     lgdt [rcx]

@@ -58,7 +58,7 @@ QEMUflags = \
 BIOS_SRCS = \
 	boot_loader.cpp efi_main.cpp efi.cpp font.cpp graphics.cpp stdfunc.cpp elf_loader.cpp asm.s
 KERNEL_SRCS = \
-	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm.s sprintf.cpp descriptor.cpp
+	kernel.cpp font.cpp graphics.cpp stdfunc.cpp asm.s descriptor.cpp handler.cpp keyboard.cpp
 
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 BIOS_OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o, $(basename $(notdir $(BIOS_SRCS)))))

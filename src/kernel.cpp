@@ -9,12 +9,10 @@ extern "C"{
 
 void kernel_init(){
     init_gdt();
-    init_idt();
+    IDT::get_instance().init_idt();
 }
 
 void kernel(FrameBuffer *frame_buffer){
-    init_gdt();
-    init_idt();
     puts(frame_buffer, "Linking to you, access our connection!\nKizunaOS, boot up!\n");
     char *str = nullptr;
     sprintf(str, "resolution H:%d\nresolution V:%d",frame_buffer->resolution_H, frame_buffer->resolution_V);

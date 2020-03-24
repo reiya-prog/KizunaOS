@@ -27,7 +27,20 @@ void init_gdt()
     write_ds_selector(ds);
 }
 
-void init_idt()
+void IDT::init_idt()
 {
-    
+    for (unsigned int i = 0; i < 256; ++i)
+    {
+        IDT::set_interrupt_handler(i, default_handler);
+    }
+}
+
+void IDT::set_interrupt_handler(unsigned int idt_no, __attribute__((ms_abi)) void (*handler)())
+{
+    IDT::get_instance().descriptors[idt_no].offset_low = static_cast<uint16_t>(reinterpret_cast<unsigned long long>(handler));
+    IDT::get_instance().descriptors[idt_no].selector = 0x0008;
+    IDT::get_instance().descriptors[idt_no].type_attr = 14;
+    IDT::get_instance().descriptors[idt_no].type_attr |= 0b10000000;
+    IDT::get_instance().descriptors[idt_no].offset_middle = static_cast<uint16_t>(reinterpret_cast<unsigned long long>(handler) >> 16);
+    IDT::get_instance().descriptors[idt_no].offset_high = static_cast<uint32_t>(reinterpret_cast<unsigned long long>(handler) >> 32);
 }

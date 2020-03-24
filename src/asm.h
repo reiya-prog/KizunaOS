@@ -6,6 +6,7 @@
 
 extern "C"{
     __attribute__((ms_abi)) void sleep_hlt(void);
+    __attribute__((ms_abi)) void default_handler(void);
     __attribute__((ms_abi)) void load_gdt(unsigned long long gdtr[2]);
     __attribute__((ms_abi)) void write_ss_selector(unsigned short ss);
     __attribute__((ms_abi)) void write_ds_selector(unsigned short ds);

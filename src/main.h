@@ -7,7 +7,6 @@
 #include "kernel.h"
 #include "stdfunc.h"
 #include "asm.h"
-#include "sprintf.h"
 #include "descriptor.h"
 #include <stddef.h>
 #include <cstdint>
