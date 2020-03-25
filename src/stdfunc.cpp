@@ -77,7 +77,7 @@ void puts_font(FrameBuffer *fb, char *str, PixelFormat back_color, PixelFormat c
         }
         basex += 9;
     }
-    g_basey += 19;
+    g_basey = basey;
 }
 
 int dec_to_asc(char *str, int dec)

@@ -31,16 +31,20 @@ void IDT::init_idt()
 {
     for (unsigned int i = 0; i < 256; ++i)
     {
-        IDT::set_interrupt_handler(i, default_handler);
+        set_interrupt_handler(i, default_handler);
     }
+    unsigned long long idtr[2];
+    idtr[0] = (reinterpret_cast<unsigned long long>(IDT::get_instance().descriptors) << 16) | (sizeof(IDT::get_instance().descriptors)-1);
+    idtr[1] = (reinterpret_cast<unsigned long long>(IDT::get_instance().descriptors) >> 48);
+    load_idt(idtr);
 }
 
 void IDT::set_interrupt_handler(unsigned int idt_no, __attribute__((ms_abi)) void (*handler)())
 {
-    IDT::get_instance().descriptors[idt_no].offset_low = static_cast<uint16_t>(reinterpret_cast<unsigned long long>(handler));
-    IDT::get_instance().descriptors[idt_no].selector = 0x0008;
-    IDT::get_instance().descriptors[idt_no].type_attr = 14;
-    IDT::get_instance().descriptors[idt_no].type_attr |= 0b10000000;
-    IDT::get_instance().descriptors[idt_no].offset_middle = static_cast<uint16_t>(reinterpret_cast<unsigned long long>(handler) >> 16);
-    IDT::get_instance().descriptors[idt_no].offset_high = static_cast<uint32_t>(reinterpret_cast<unsigned long long>(handler) >> 32);
+    descriptors[idt_no].offset_low = static_cast<uint16_t>(reinterpret_cast<unsigned long long>(handler));
+    descriptors[idt_no].selector = 0x0008;
+    descriptors[idt_no].type_attr = 14;
+    descriptors[idt_no].type_attr |= 0b10000000;
+    descriptors[idt_no].offset_middle = static_cast<uint16_t>(reinterpret_cast<unsigned long long>(handler) >> 16);
+    descriptors[idt_no].offset_high = static_cast<uint32_t>(reinterpret_cast<unsigned long long>(handler) >> 32);
 }

@@ -4,6 +4,8 @@
 #include "graphics.h"
 #include "stdfunc.h"
 
+extern char g_chara;
+
 typedef struct {
     FrameBuffer frame_buffer;
 } BootStruct;

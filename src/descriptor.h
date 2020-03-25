@@ -2,6 +2,7 @@
 
 void init_gdt();
 extern void default_handler(void);
+extern void int21_handler(void);
 
 class IDT
 {
