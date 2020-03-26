@@ -14,7 +14,6 @@ SECTIONS
     .got : {
         *(.got)
     }
-    . += 0x10000;
     .bss : {
         *(.bss)
     }

@@ -50,31 +50,35 @@ io_write_32:
     out dx, eax
     ret
 
-.global int21_handler
-int21_handler:
-    push rcx
-    mov rcx, 0x21
-    jmp default_handler
-    ret
-
 .global default_handler
 default_handler:
+    hlt
+    jmp default_handler
+
+.global int21_handler
+int21_handler:
+    push rdi
+    mov rdi, 0x21
+    call handler_wrapper
+    pop rdi
+    iretq
+
+.global handler_wrapper
+handler_wrapper:
     push rax
     push rcx
     push rdx
     push rbx
     push rbp
     push rsi
-    push rdi
     call do_default_handler
-    pop rdi
     pop rsi
     pop rbp
     pop rbx
     pop rdx
     pop rcx
     pop rax
-    iretq
+    ret
 
 .global load_gdt
 load_gdt:

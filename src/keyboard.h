@@ -1,6 +1,7 @@
 #pragma once
 
 #define Key_ESC 0x1b
+#define Key_Backslash 0x5c
 #define Key_Backspace 0x08
 #define Key_Tab 0x09
 #define Key_Enter 0x0a
@@ -19,9 +20,20 @@
 #define Key_F8 0x00
 #define Key_F9 0x00
 #define Key_F10 0x00
+#define Key_F11 0x00
+#define Key_F12 0x00
+#define Key_PgUp 0x00
+#define Key_Home 0x00
+#define Key_End 0x00
+#define Key_PgDn 0x00
+#define Key_Insert 0x00
+#define Key_Delete 0x00
 #define Key_NumLock 0x00
 #define Key_ScrollLock 0x00
+#define Key_Windows 0x00
 
 extern const char keycode_map[];
 
 void init_kbc(void);
+unsigned char get_kbc_data(void);
+unsigned char get_keycode(void);

@@ -2,11 +2,19 @@
 
 void do_kbc_handler()
 {
-    io_write_8(PIC0_OCW2_ADDR, 0x61);
-    if(!(io_read_8(KBC_STATUS_ADDR) & KBC_STATUS_OBF)) return;
+    if (!(io_read_8(KBC_STATUS_ADDR) & KBC_STATUS_OBF))
+    {
+        io_write_8(PIC0_OCW2_ADDR, 0x61);
+        return;
+    }
     unsigned char keycode = io_read_8(KBC_DATA_ADDR);
-    if(keycode & KBC_DATA_PRESSED) return;
+    if (keycode & KBC_DATA_PRESSED)
+    {
+        io_write_8(PIC0_OCW2_ADDR, 0x61);
+        return;
+    }
     g_chara = keycode_map[keycode];
+    io_write_8(PIC0_OCW2_ADDR, 0x61);
     return;
 }
 

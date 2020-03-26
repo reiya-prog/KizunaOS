@@ -1,6 +1,7 @@
 #include "main.h"
 
-int g_basey = 1;
+unsigned int g_basex = 1;
+unsigned int g_basey = 1;
 
 void putc(FrameBuffer *fb, char chara)
 {
@@ -22,10 +23,16 @@ void putc(FrameBuffer *fb, char chara, PixelFormat back_color, PixelFormat chara
     }
     else if (chara == '\b')
     {
-        str[0] = '\b';
-        str[1] = ' ';
-        str[2] = '\b';
-        str[3] = '\0';
+        if(g_basex >= 9){
+            g_basex -= 9;
+        }else{
+            g_basex = fb->resolution_H - 16;
+            g_basey -= 19;
+        }
+        str[0] = ' ';
+        str[1] = '\0';
+        puts_font(fb, str, back_color, chara_color);
+        g_basex -= 9;
     }
     else
     {
@@ -52,7 +59,7 @@ void puts(FrameBuffer *fb, char *str, PixelFormat back_color, PixelFormat chara_
 
 void puts_font(FrameBuffer *fb, char *str, PixelFormat back_color, PixelFormat chara_color)
 {
-    int basex = 1, basey = g_basey;
+    unsigned int basex = g_basex, basey = g_basey;
     for (; *str != '\0'; ++str)
     {
         if (*str == '\n')
@@ -76,7 +83,12 @@ void puts_font(FrameBuffer *fb, char *str, PixelFormat back_color, PixelFormat c
             }
         }
         basex += 9;
+        if(basex > fb->resolution_H - 8){
+            basex = 1;
+            basey += 19;
+        }
     }
+    g_basex = basex;
     g_basey = basey;
 }
 

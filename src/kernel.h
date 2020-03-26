@@ -5,6 +5,7 @@
 #include "stdfunc.h"
 
 extern char g_chara;
+extern int check;
 
 typedef struct {
     FrameBuffer frame_buffer;
