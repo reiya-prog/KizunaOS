@@ -31,9 +31,16 @@ void kernel(FrameBuffer *frame_buffer)
         io_stihlt();
         io_cli();
         if(key_buf.empty()) continue;
-        char write_data = key_buf.front();
+        char keycode = key_buf.front();
         key_buf.pop();
         io_sti();
+        if(keycode & KBC_DATA_PRESSED){
+            keycode ^= KBC_DATA_PRESSED;
+            if(keycode == Key_Shift_L || keycode == Key_Shift_R) is_Shift = false;
+            continue;
+        }
+        if(keycode == Key_Shift_L || keycode == Key_Shift_R) is_Shift = true;
+        char write_data = is_Shift ? keymap_shift[keycode] : keymap[keycode];
         putc(frame_buffer, write_data);
     }
     io_hlt();

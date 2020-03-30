@@ -8,11 +8,7 @@ void do_kbc_handler()
         return;
     }
     unsigned char keycode = io_read_8(KBC_DATA_ADDR);
-    if (keycode & KBC_DATA_PRESSED)
-    {
-        return;
-    }
-    key_buf.push(keycode_map[keycode]);
+    key_buf.push(keycode);
     return;
 }
 
