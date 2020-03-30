@@ -12,6 +12,8 @@
 #include "handler.h"
 #include "keyboard.h"
 #include "pic.h"
+#include "stl.h"
+#include "global.h"
 #include <stddef.h>
 #include <cstdint>
 #include <stdarg.h>

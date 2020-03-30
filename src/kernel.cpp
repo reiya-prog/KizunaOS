@@ -1,18 +1,15 @@
 #include "main.h"
 
-char g_chara = 0;
-int check;
-
 extern "C"
 {
     void kernel_start(BootStruct *boot_info)
     {
-        kernel_init();
+        init_kernel();
         kernel(&boot_info->frame_buffer);
     }
 }
 
-void kernel_init()
+void init_kernel()
 {
     init_gdt();
     init_idt();
@@ -32,8 +29,12 @@ void kernel(FrameBuffer *frame_buffer)
     while (1)
     {
         io_stihlt();
-        putc(frame_buffer, g_chara);
-        g_chara = 0;
+        io_cli();
+        if(key_buf.empty()) continue;
+        char write_data = key_buf.front();
+        key_buf.pop();
+        io_sti();
+        putc(frame_buffer, write_data);
     }
     io_hlt();
 }
