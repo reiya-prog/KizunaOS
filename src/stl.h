@@ -9,13 +9,45 @@ public:
     Stack()
     {
         write_pos = 0;
-        read_pos = 0;
         count = 0;
     }
+
+    void push(const T &push_data)
+    {
+        if (count == N)
+            return;
+        data[write_pos] = push_data;
+        ++write_pos;
+        ++count;
+    }
+
+    T top(void)
+    {
+        return data[write_pos - 1];
+    }
+
+    void pop(void)
+    {
+        if (count == 0)
+            return;
+        --write_pos;
+        --count;
+    }
+
+    uint32_t size(void)
+    {
+        return count;
+    }
+
+    bool empty(void)
+    {
+        return !count;
+    }
+
 private:
     T data[N];
-    uint32_t write_pos, read_pos, count;
-}
+    uint32_t write_pos, count;
+};
 /* 一周した場合は何もしない */
 template <typename T, uint32_t N>
 class Queue
@@ -28,7 +60,7 @@ public:
         count = 0;
     }
 
-    void push(const T& push_data)
+    void push(const T &push_data)
     {
         if (count == N)
             return;
