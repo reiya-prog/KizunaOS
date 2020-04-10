@@ -1,0 +1,211 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x0
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          48128 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         5
+  Size of section headers:           64 (bytes)
+  Number of section headers:         17
+  Section header string table index: 15
+
+Section Headers:
+  [Nr] Name              Type             Address           Offset
+       Size              EntSize          Flags  Link  Info  Align
+  [ 0]                   NULL             0000000000000000  00000000
+       0000000000000000  0000000000000000           0     0     0
+  [ 1] .text             PROGBITS         0000000000000000  00001000
+       0000000000001548  0000000000000000  AX       0     0     16
+  [ 2] .dynsym           DYNSYM           0000000000001548  00002548
+       0000000000000018  0000000000000018   A       5     1     8
+  [ 3] .gnu.hash         GNU_HASH         0000000000001560  00002560
+       0000000000000018  0000000000000000   A       2     0     8
+  [ 4] .hash             HASH             0000000000001578  00002578
+       0000000000000010  0000000000000004   A       2     0     4
+  [ 5] .dynstr           STRTAB           0000000000001588  00002588
+       0000000000000001  0000000000000000   A       0     0     1
+  [ 6] .rela.dyn         RELA             0000000000001590  00002590
+       0000000000000198  0000000000000018   A       2     0     8
+  [ 7] .eh_frame         PROGBITS         0000000000001728  00002728
+       0000000000000458  0000000000000000   A       0     0     8
+  [ 8] .data             PROGBITS         0000000000001b80  00002b80
+       0000000000008210  0000000000000000 WAMS       0     0     16
+  [ 9] .got              PROGBITS         0000000000009d90  0000ad90
+       0000000000000080  0000000000000000  WA       0     0     8
+  [10] .ctors            PROGBITS         0000000000009e10  0000ae10
+       0000000000000008  0000000000000000  WA       0     0     8
+  [11] .dynamic          DYNAMIC          0000000000009e18  0000ae18
+       00000000000000c0  0000000000000010  WA       5     0     8
+  [12] .bss              NOBITS           0000000000009ee0  0000aed8
+       00000000010090d0  0000000000000000  WA       0     0     16
+  [13] .comment          PROGBITS         0000000000000000  0000aed8
+       0000000000000049  0000000000000001  MS       0     0     1
+  [14] .symtab           SYMTAB           0000000000000000  0000af28
+       00000000000006f0  0000000000000018          16     7     8
+  [15] .shstrtab         STRTAB           0000000000000000  0000b618
+       000000000000007e  0000000000000000           0     0     1
+  [16] .strtab           STRTAB           0000000000000000  0000b696
+       0000000000000563  0000000000000000           0     0     1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  l (large), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  LOAD           0x0000000000001000 0x0000000000000000 0x0000000000000000
+                 0x0000000000001b80 0x0000000000001b80  R E    0x1000
+  LOAD           0x0000000000002b80 0x0000000000001b80 0x0000000000001b80
+                 0x0000000000008358 0x0000000001011430  RW     0x1000
+  DYNAMIC        0x000000000000ae18 0x0000000000009e18 0x0000000000009e18
+                 0x00000000000000c0 0x00000000000000c0  RW     0x8
+  GNU_RELRO      0x000000000000ad90 0x0000000000009d90 0x0000000000009d90
+                 0x0000000000000148 0x0000000000001000  R      0x1
+  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x0000000000000000 0x0000000000000000  RW     0x0
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .text .dynsym .gnu.hash .hash .dynstr .rela.dyn .eh_frame 
+   01     .data .got .ctors .dynamic .bss 
+   02     .dynamic 
+   03     .got .ctors .dynamic 
+   04     
+
+Dynamic section at offset 0xae18 contains 12 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000015 (DEBUG)              0x0
+ 0x0000000000000007 (RELA)               0x1590
+ 0x0000000000000008 (RELASZ)             408 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000006ffffff9 (RELACOUNT)          17
+ 0x0000000000000006 (SYMTAB)             0x1548
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000005 (STRTAB)             0x1588
+ 0x000000000000000a (STRSZ)              1 (bytes)
+ 0x000000006ffffef5 (GNU_HASH)           0x1560
+ 0x0000000000000004 (HASH)               0x1578
+ 0x0000000000000000 (NULL)               0x0
+
+Relocation section '.rela.dyn' at offset 0x2590 contains 17 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000009d90  000000000008 R_X86_64_RELATIVE                    aee4
+000000009d98  000000000008 R_X86_64_RELATIVE                    aee0
+000000009da0  000000000008 R_X86_64_RELATIVE                    9d30
+000000009da8  000000000008 R_X86_64_RELATIVE                    9cd0
+000000009db0  000000000008 R_X86_64_RELATIVE                    9b80
+000000009db8  000000000008 R_X86_64_RELATIVE                    9b84
+000000009dc0  000000000008 R_X86_64_RELATIVE                    9b94
+000000009dc8  000000000008 R_X86_64_RELATIVE                    9b98
+000000009dd0  000000000008 R_X86_64_RELATIVE                    1b80
+000000009dd8  000000000008 R_X86_64_RELATIVE                    ded
+000000009de0  000000000008 R_X86_64_RELATIVE                    9ee0
+000000009de8  000000000008 R_X86_64_RELATIVE                    df0
+000000009e10  000000000008 R_X86_64_RELATIVE                    12c0
+000000009df0  000000000008 R_X86_64_RELATIVE                    af60
+000000009df8  000000000008 R_X86_64_RELATIVE                    af70
+000000009e00  000000000008 R_X86_64_RELATIVE                    afb0
+000000009e08  000000000008 R_X86_64_RELATIVE                    12fb0
+
+The decoding of unwind sections for machine type Advanced Micro Devices X86-64 is not currently supported.
+
+Symbol table '.dynsym' contains 1 entry:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+
+Symbol table '.symtab' contains 74 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000e32     0 NOTYPE  LOCAL  DEFAULT    1 write_cs_end
+     2: 0000000000009cb0    24 OBJECT  LOCAL  DEFAULT    8 _ZL3gdt
+     3: 0000000000000ed6     0 NOTYPE  LOCAL  DEFAULT    1 ret_label
+     4: 00000000000012c0    11 FUNC    LOCAL  DEFAULT    1 _GLOBAL__sub_I_global.cpp
+     5: 00000000000012a0    18 FUNC    LOCAL  DEFAULT    1 __cxx_global_var_init
+     6: 0000000000009e18     0 NOTYPE  LOCAL  HIDDEN    11 _DYNAMIC
+     7: 0000000000000040   118 FUNC    GLOBAL DEFAULT    1 _Z11init_kernelP11FrameBu
+     8: 0000000000000500    69 FUNC    GLOBAL DEFAULT    1 _Z4putcP11FrameBufferc
+     9: 0000000000000850    65 FUNC    GLOBAL DEFAULT    1 _Z4putsP11FrameBufferPc
+    10: 00000000000000c0   410 FUNC    GLOBAL DEFAULT    1 _Z6kernelP11FrameBuffer
+    11: 0000000000000ab0   789 FUNC    GLOBAL DEFAULT    1 _Z7sprintfPcS_z
+    12: 0000000000000e80   114 FUNC    GLOBAL DEFAULT    1 _Z8init_gdtv
+    13: 0000000000000f00   104 FUNC    GLOBAL DEFAULT    1 _Z8init_idtv
+    14: 00000000000010e0    33 FUNC    GLOBAL DEFAULT    1 _Z8init_kbcv
+    15: 0000000000001110   164 FUNC    GLOBAL DEFAULT    1 _Z8init_picv
+    16: 0000000000001460    84 FUNC    WEAK   DEFAULT    1 _ZN3STL10RingBufferIcLj10
+    17: 0000000000001410    33 FUNC    WEAK   DEFAULT    1 _ZNK3STL10RingBufferIcLj1
+    18: 0000000000001440    28 FUNC    WEAK   DEFAULT    1 _ZNK3STL10RingBufferIcLj1
+    19: 0000000000000dcc     0 NOTYPE  GLOBAL DEFAULT    1 io_cli
+    20: 0000000000000dce     0 NOTYPE  GLOBAL DEFAULT    1 io_sti
+    21: 0000000000000dd0     0 NOTYPE  GLOBAL DEFAULT    1 io_stihlt
+    22: 000000000000aee0     1 OBJECT  GLOBAL DEFAULT   12 is_Shift
+    23: 0000000000000000    52 FUNC    GLOBAL DEFAULT    1 kernel_start
+    24: 000000000000aee4   112 OBJECT  GLOBAL DEFAULT   12 key_buf
+    25: 0000000000009cd0    96 OBJECT  GLOBAL DEFAULT    8 keymap
+    26: 0000000000009d30    96 OBJECT  GLOBAL DEFAULT    8 keymap_shift
+    27: 0000000000001b80 32768 OBJECT  GLOBAL DEFAULT    8 font_map
+    28: 0000000000009b84     4 OBJECT  GLOBAL DEFAULT    8 Color_Black
+    29: 0000000000009b88     4 OBJECT  GLOBAL DEFAULT    8 Color_Blue
+    30: 0000000000009b8c     4 OBJECT  GLOBAL DEFAULT    8 Color_Green
+    31: 0000000000009b90     4 OBJECT  GLOBAL DEFAULT    8 Color_Red
+    32: 0000000000009b80     4 OBJECT  GLOBAL DEFAULT    8 Color_White
+    33: 0000000000000260   127 FUNC    GLOBAL DEFAULT    1 _Z10draw_pixeljj11PixelFo
+    34: 0000000000000410   132 FUNC    GLOBAL DEFAULT    1 _Z8draw_box4RECT11PixelFo
+    35: 00000000000002e0   289 FUNC    GLOBAL DEFAULT    1 _Z9draw_rect4RECT11PixelF
+    36: 00000000000004a0    89 FUNC    GLOBAL DEFAULT    1 _Z9get_pixeljjP11FrameBuf
+    37: 0000000000000920   170 FUNC    GLOBAL DEFAULT    1 _Z10dec_to_ascPci
+    38: 00000000000009d0   214 FUNC    GLOBAL DEFAULT    1 _Z10hex_to_ascPci
+    39: 0000000000000660    66 FUNC    GLOBAL DEFAULT    1 _Z4putcP11FrameBufferc11P
+    40: 0000000000000550   270 FUNC    GLOBAL DEFAULT    1 _Z4putcP11FrameBufferc11P
+    41: 00000000000008a0    62 FUNC    GLOBAL DEFAULT    1 _Z4putsP11FrameBufferPc11
+    42: 00000000000008e0    59 FUNC    GLOBAL DEFAULT    1 _Z4putsP11FrameBufferPc11
+    43: 00000000000006b0   406 FUNC    GLOBAL DEFAULT    1 _Z9puts_fontP11FrameBuffe
+    44: 0000000000009b94     4 OBJECT  GLOBAL DEFAULT    8 g_basex
+    45: 0000000000009b98     4 OBJECT  GLOBAL DEFAULT    8 g_basey
+    46: 0000000000000ded     0 NOTYPE  GLOBAL DEFAULT    1 default_handler
+    47: 00000000000010a0    52 FUNC    GLOBAL DEFAULT    1 do_default_handler
+    48: 0000000000000e00     0 NOTYPE  GLOBAL DEFAULT    1 handler_wrapper
+    49: 0000000000000df0     0 NOTYPE  GLOBAL DEFAULT    1 int21_handler
+    50: 0000000000000dc8     0 NOTYPE  GLOBAL DEFAULT    1 io_hlt
+    51: 0000000000000dda     0 NOTYPE  GLOBAL DEFAULT    1 io_read_32
+    52: 0000000000000dd3     0 NOTYPE  GLOBAL DEFAULT    1 io_read_8
+    53: 0000000000000de7     0 NOTYPE  GLOBAL DEFAULT    1 io_write_32
+    54: 0000000000000de1     0 NOTYPE  GLOBAL DEFAULT    1 io_write_8
+    55: 0000000000000e12     0 NOTYPE  GLOBAL DEFAULT    1 load_gdt
+    56: 0000000000000e16     0 NOTYPE  GLOBAL DEFAULT    1 load_idt
+    57: 0000000000000e79     0 NOTYPE  GLOBAL DEFAULT    1 set_CR3
+    58: 0000000000000e37     0 NOTYPE  GLOBAL DEFAULT    1 set_paging_reg
+    59: 0000000000000e22     0 NOTYPE  GLOBAL DEFAULT    1 write_cs_selector
+    60: 0000000000000e1e     0 NOTYPE  GLOBAL DEFAULT    1 write_ds_selector
+    61: 0000000000000e1a     0 NOTYPE  GLOBAL DEFAULT    1 write_ss_selector
+    62: 0000000000000f70   182 FUNC    GLOBAL DEFAULT    1 _Z21set_interrupt_handler
+    63: 0000000000009ee0  4096 OBJECT  GLOBAL DEFAULT   12 descriptors
+    64: 0000000000001030    88 FUNC    GLOBAL DEFAULT    1 _Z14do_kbc_handlerv
+    65: 0000000000001090     6 FUNC    GLOBAL DEFAULT    1 _Z16do_mouse_handlerv
+    66: 00000000000014c0    82 FUNC    WEAK   DEFAULT    1 _ZN3STL10RingBufferIcLj10
+    67: 00000000000011c0   218 FUNC    GLOBAL DEFAULT    1 _Z7set_picj
+    68: 0000000000001520    40 FUNC    WEAK   DEFAULT    1 _ZN3STL10RingBufferIcLj10
+    69: 0000000000012fb0 0x1000000 OBJECT  GLOBAL DEFAULT   12 Level1PageTable
+    70: 000000000000afb0 32768 OBJECT  GLOBAL DEFAULT   12 Level2PageTable
+    71: 000000000000af70    64 OBJECT  GLOBAL DEFAULT   12 Level3PageTable
+    72: 000000000000af60     8 OBJECT  GLOBAL DEFAULT   12 Level4PageTable
+    73: 00000000000012d0   308 FUNC    GLOBAL DEFAULT    1 _Z11init_pagingv
+
+Histogram for bucket list length (total of 1 bucket):
+ Length  Number     % of total  Coverage
+      0  1          (100.0%)
+
+No version information found in this file.

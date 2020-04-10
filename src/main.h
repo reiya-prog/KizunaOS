@@ -14,6 +14,7 @@
 #include "pic.h"
 #include "stl.h"
 #include "global.h"
+#include "paging.h"
 #include <stddef.h>
 #include <cstdint>
 #include <stdarg.h>

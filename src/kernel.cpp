@@ -4,17 +4,24 @@ extern "C"
 {
     void kernel_start(BootStruct *boot_info)
     {
-        init_kernel();
+        puts(&boot_info->frame_buffer, "kernel initialize start!\n");
+        init_kernel(&boot_info->frame_buffer);
         kernel(&boot_info->frame_buffer);
     }
 }
 
-void init_kernel()
+void init_kernel(FrameBuffer *fb)
 {
+    puts(fb, "kernel initialize start!\n");
     init_gdt();
+    puts(fb, "initialize gdt suceess!\n");
+    //init_paging();
     init_idt();
+    puts(fb, "initialize idt suceess!\n");
     init_pic();
+    puts(fb, "initialize pic suceess!\n");
     init_kbc();
+    puts(fb, "initialize kbc suceess!\n");
 }
 
 void kernel(FrameBuffer *frame_buffer)

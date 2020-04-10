@@ -12,5 +12,5 @@ typedef struct {
 } BootStruct;
 
 extern "C" void kernel_start(BootStruct* BootStruct);
-void init_kernel();
+void init_kernel(FrameBuffer *fb);
 void kernel(FrameBuffer *FrameBuffer);

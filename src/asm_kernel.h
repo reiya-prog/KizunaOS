@@ -21,4 +21,6 @@ extern "C"{
     __attribute__((ms_abi)) void write_ss_selector(unsigned short ss);
     __attribute__((ms_abi)) void write_ds_selector(unsigned short ds);
     __attribute__((ms_abi)) void write_cs_selector(unsigned short cs);
+    __attribute__((ms_abi)) void set_CR3(unsigned long long table_addr);
+    __attribute__((ms_abi)) void set_paging_reg(void);
 }

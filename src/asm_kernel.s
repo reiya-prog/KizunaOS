@@ -111,3 +111,32 @@ write_cs_selector:
 write_cs_end:
     add rsp, 8 + 2
     ret
+
+.global set_paging_reg
+set_paging_reg:
+    mov rcx, cr0
+    mov rdx, 0x8000
+    not rdx
+    and rcx, rdx
+    mov cr0, rcx
+
+    mov rcx, cr4
+    mov rdx, 0x10
+    or rcx, rdx
+    mov cr4, rcx
+
+    mov ecx, 0xC0000080
+    rdmsr
+    or eax, 0x100
+    wrmsr
+
+    mov rcx, cr0
+    mov rdx, 0x8000
+    or rcx, rdx
+    mov cr0, rcx
+
+    ret
+
+.global set_CR3
+set_CR3:
+    mov cr3, rcx
